@@ -4,10 +4,9 @@
   "main": "./dist/app.js",
   "scripts": {
     "dev": "prisma generate && ts-node-dev  --respawn  --poll --transpile-only --exit-child --no-notify --ignore-watch node_modules  app.ts",
-    "dockerDev": "docker compose -f docker-compose-dev.yml up --watch",
     "build": "prisma generate && tsc",
-    "dockerProduction": "docker compose up --build",
-    "dockerStart": "prisma migrate deploy && node ./dist/app.js",
+    "dockerProd": "docker compose -f docker-compose-dev.yml up --build",
+    "dockerDev": "docker compose -f docker-compose-dev.yml up --build --watch",
     "start": "npx prisma migrate deploy && swc src -d dist -D --strip-leading-paths  && node ./dist/app.js"
   },
   "keywords": [],
