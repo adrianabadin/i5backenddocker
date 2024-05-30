@@ -1,0 +1,21 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _passport = /*#__PURE__*/ _interop_require_default(require("passport"));
+const _passportlocal = require("passport-local");
+const _authservice = require("./auth.service");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+const authService = new _authservice.AuthService();
+_passport.default.use('login', new _passportlocal.Strategy({
+    passReqToCallback: true
+}, authService.localLoginVerify));
+_passport.default.use('register', new _passportlocal.Strategy({
+    passReqToCallback: true
+}, authService.localSignUpVerify));
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9hdXRoL2xvY2FsU3RyYXRlZ3kubW9kdWxlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qIGVzbGludC1kaXNhYmxlIEB0eXBlc2NyaXB0LWVzbGludC9uby1taXN1c2VkLXByb21pc2VzICovXHJcbmltcG9ydCBwYXNzcG9ydCBmcm9tICdwYXNzcG9ydCdcclxuaW1wb3J0IHsgU3RyYXRlZ3kgfSBmcm9tICdwYXNzcG9ydC1sb2NhbCdcclxuaW1wb3J0IHsgQXV0aFNlcnZpY2UgfSBmcm9tICcuL2F1dGguc2VydmljZSdcclxuY29uc3QgYXV0aFNlcnZpY2UgPSBuZXcgQXV0aFNlcnZpY2UoKVxyXG5wYXNzcG9ydC51c2UoJ2xvZ2luJywgbmV3IFN0cmF0ZWd5KHsgcGFzc1JlcVRvQ2FsbGJhY2s6IHRydWUgfSwgYXV0aFNlcnZpY2UubG9jYWxMb2dpblZlcmlmeSkpXHJcbnBhc3Nwb3J0LnVzZSgncmVnaXN0ZXInLCBuZXcgU3RyYXRlZ3koeyBwYXNzUmVxVG9DYWxsYmFjazogdHJ1ZSB9LCBhdXRoU2VydmljZS5sb2NhbFNpZ25VcFZlcmlmeSkpXHJcbiJdLCJuYW1lcyI6WyJhdXRoU2VydmljZSIsIkF1dGhTZXJ2aWNlIiwicGFzc3BvcnQiLCJ1c2UiLCJTdHJhdGVneSIsInBhc3NSZXFUb0NhbGxiYWNrIiwibG9jYWxMb2dpblZlcmlmeSIsImxvY2FsU2lnblVwVmVyaWZ5Il0sInJhbmdlTWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7OzsiLCJtYXBwaW5ncyI6IkFBQUEseURBQXlEOzs7O2lFQUNwQzsrQkFDSTs2QkFDRzs7Ozs7O0FBQzVCLE1BQU1BLGNBQWMsSUFBSUMsd0JBQVc7QUFDbkNDLGlCQUFRLENBQUNDLEdBQUcsQ0FBQyxTQUFTLElBQUlDLHVCQUFRLENBQUM7SUFBRUMsbUJBQW1CO0FBQUssR0FBR0wsWUFBWU0sZ0JBQWdCO0FBQzVGSixpQkFBUSxDQUFDQyxHQUFHLENBQUMsWUFBWSxJQUFJQyx1QkFBUSxDQUFDO0lBQUVDLG1CQUFtQjtBQUFLLEdBQUdMLFlBQVlPLGlCQUFpQiJ9

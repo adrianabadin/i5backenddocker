@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE `Ads` MODIFY `url` LONGTEXT NULL,
+    MODIFY `photoUrl` LONGTEXT NOT NULL;
+
+-- AlterTable
+ALTER TABLE `Photos` MODIFY `url` LONGTEXT NOT NULL;
+
+-- AlterTable
+ALTER TABLE `Video` MODIFY `url` LONGTEXT NULL;

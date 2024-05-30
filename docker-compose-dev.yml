@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev    
+    ports:
+      - "8080:8080"
+    links:
+      - db
+    restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: /package.json
+        - action: sync+restart
+          path: ./src
+          target: /home/app/src
+          
+  db:
+    build: 
+      context: .
+      dockerfile: Dockerfile.mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=informe5
+    volumes:
+      - dbvol:/var/lib/mysql
+    restart: always
+volumes:
+  dbvol:
+
+# - action: sync+restart
+        #   path: .
+        #   target: /home/app
+        #   ignore:
+        #     - node_modules
+        #     - dist
+        #     - public
+        #     - logs
