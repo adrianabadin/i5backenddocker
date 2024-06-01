@@ -2,22 +2,26 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.prod
-    command: npm run dockerStart 
-      # - npx prisma migrate deploy 
-      #-  #>
-    #  bash -c "npx prisma migrate deploy && npm run dockerStart"
+      dockerfile: Dockerfile.dev    
     ports:
-      - "8080:8080"
+      - "8090:8080"
     links:
       - db
     restart: always
+    develop:
+      watch:
+        - action: rebuild
+          path: /package.json
+        - action: sync+restart
+          path: ./src
+          target: /home/app/src
+          
   db:
     build: 
       context: .
       dockerfile: Dockerfile.mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=informe5
@@ -26,3 +30,12 @@ services:
     restart: always
 volumes:
   dbvol:
+
+# - action: sync+restart
+        #   path: .
+        #   target: /home/app
+        #   ignore:
+        #     - node_modules
+        #     - dist
+        #     - public
+        #     - logs
