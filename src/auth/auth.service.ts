@@ -20,10 +20,10 @@ const privateKey = fs.readFileSync('./src/auth/privateKey.pem', 'utf-8')
 const userServicePM = new UsersService()
 export class AuthService  {
   constructor (
-    protected prisma = prismaClient.prisma,
+    public prisma = prismaClient.prisma,
     protected crypt = { encrypt, decrypt },
-    protected facebookService = new FacebookService(),
-    protected usersService = userServicePM
+    public facebookService = new FacebookService(),
+    public usersService = userServicePM
 
 
   ) { 
@@ -41,7 +41,7 @@ export class AuthService  {
       const user = await this.usersService.findByUserName(username)
       if (user === null || user instanceof PrismaError) {
         const body: SignUpType & { hash: string, avatar?: string } =
-        { ...req.body, hash: await argon2.hash(password), avatar: req.file?.path }
+        { ...req.body, hash: await argon2.hash(password), avatar: req.file?.path,birthDate:(new Date(req.body.birthDate as string)).toDateString() }
         const newUser = await this.usersService.createUser(body)
         if (newUser instanceof PrismaError) throw newUser
         if (newUser?.id !== undefined) {
