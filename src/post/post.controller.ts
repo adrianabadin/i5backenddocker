@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/prefer-optional-chain */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { response, type Request, type Response } from 'express'
-import { PostService } from './post.service'
+import { PostService, postService } from './post.service'
 import { type Prisma } from '@prisma/client'
 // import { GoogleService } from '../google/google.service'
 // import { GoogleService } from '../Services/google.service'
@@ -31,7 +31,7 @@ import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 export class PostController {
   constructor (
-    protected service = new PostService(),
+    protected service = postService,
     protected prisma = prismaClient.prisma,
     protected googleService = new GoogleService(),
     protected facebookService = new FacebookService(),
@@ -291,7 +291,7 @@ export class PostController {
       try {
         const { page } = req.query
 
-        const response = await this.service.get30DaysPosts(page !== undefined ? parseInt(page) : undefined)
+        const response = await postService.get30DaysPosts(page !== undefined ? parseInt(page) : undefined)
         if (response instanceof PrismaError) {
           res.status(500).send(response)
           return

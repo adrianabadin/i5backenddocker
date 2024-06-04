@@ -6,7 +6,7 @@
     "dev": "prisma generate && ts-node-dev  --respawn  --poll --transpile-only --exit-child --no-notify --ignore-watch node_modules  app.ts",
     "build": "prisma generate && tsc",
     "dockerProd": "docker compose up --build",
-    "dockerDev": "docker compose up --build --watch",
+    "dockerDev": "docker compose up  --watch",
     "start": "npx prisma migrate deploy && swc src -d dist -D --strip-leading-paths  && node ./dist/app.js"
   },
   "keywords": [],
