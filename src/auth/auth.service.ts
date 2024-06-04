@@ -41,7 +41,7 @@ export class AuthService  {
       const user = await this.usersService.findByUserName(username)
       if (user === null || user instanceof PrismaError) {
         const body: SignUpType & { hash: string, avatar?: string } =
-        { ...req.body, hash: await argon2.hash(password), avatar: req.file?.path,birthDate:(new Date(req.body.birthDate as string)).toDateString() }
+        { ...req.body, hash: await argon2.hash(password), avatar: req.file?.path,birthDate:(new Date(req.body.birthDate as string)).toISOString() }
         const newUser = await this.usersService.createUser(body)
         if (newUser instanceof PrismaError) throw newUser
         if (newUser?.id !== undefined) {
