@@ -15,7 +15,11 @@ passport.use('facebook', new Strategy({
   profileFields: ['id', 'displayName', 'emails', 'photos', 'birthday', 'gender', 'name', 'profileUrl']
 }, (req: Request<any>, accessToken: string, _refreshToken: string, profile: object, cb: (...args: any) => void) => {
   console.log(req.query)
-  if ('id' in profile) facebookService.getLongliveAccessToken(accessToken, profile.id as string).then((response: any) => { console.log(response?.body) }).catch((e: any) => { console.log(e) })
+  if ('id' in profile) 
+    facebookService
+      .getLongliveAccessToken(accessToken, profile.id as string)
+      .then((response: any) => { console.log(response?.body) })
+      .catch((e: any) => { console.log(e) })
   const { birthDate, gender, phone } = JSON.parse(req.query.state as string)
   /**
  * logica a implementar

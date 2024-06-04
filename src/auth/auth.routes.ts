@@ -30,6 +30,7 @@ authRoutes.get('/innerAuth/cb', authController.innerToken)
 authRoutes.get('/isRTValid', authController.isRTValid)
 authRoutes.get('/google/getuser', passport.authenticate('google', { scope: ['profile', 'email'] }), authController.gOAuthLogin)
 authRoutes.get('/facebook', (req: Request, res: Response, next: NextFunction) => {
+  console.log("facebook de coso")
   let data
   if (req.query !== undefined) data = req.query
   passport.authenticate('facebook', {session:false, scope: ['email'], state: (data != null) ? JSON.stringify(data) : '' })(req, res, next)
