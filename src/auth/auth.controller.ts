@@ -58,6 +58,7 @@ export class AuthController {
       let refreshToken
       try {
         if ('rol' in req.user && req.user.rol === 'ADMIN') {
+          await this.service.checkDataConfig()
           refreshToken = (await this.service.prisma.dataConfig.findUniqueOrThrow({ where: { id: 1 }, select: { refreshToken: true } })).refreshToken
         }
         console.log(refreshToken)
@@ -98,6 +99,7 @@ export class AuthController {
         res.cookie('jwt', token)
         let refreshToken
         if ('rol' in req.user && req.user.rol !== null && req.user.rol === 'ADMIN') {
+          await this.service.checkDataConfig()
           refreshToken = await this.service.prisma.dataConfig.findUniqueOrThrow({ where: { id: 1 } })
         }
         res.status(200).send({ ...req.user, password: null, token, refreshToken })
@@ -116,6 +118,7 @@ export class AuthController {
         if (tokens.refresh_token !== undefined) {
           oauthClient.setCredentials(tokens)
           GoogleService.rt = tokens.refresh_token
+          await this.service.checkDataConfig()
           response = (await this.service.prisma.dataConfig.upsert({ where: { id: 1 }, update: { refreshToken: tokens.refresh_token }, create: { refreshToken: tokens.refresh_token } })).refreshToken
         }
       }
@@ -127,6 +130,7 @@ export class AuthController {
   }
   async isRTValid (req: Request<any, any, any, { code: string }>, res: Response) {
     try {
+      await this.service.checkDataConfig()
       const refreshToken = (await this.service.prisma.dataConfig.findUnique({ where: { id: 1 }, select: { refreshToken: true } }))?.refreshToken
       oauthClient.setCredentials({ refresh_token: refreshToken })
       const data = await oauthClient.getAccessToken()

@@ -18,15 +18,7 @@ dotenv.config()
 const simetricKey = process.env.SIMETRICKEY
 const privateKey = fs.readFileSync('./src/auth/privateKey.pem', 'utf-8')
 const userServicePM = new UsersService()
-async ()=>{
-  try{
-  const response = await prismaClient.prisma.dataConfig.findUniqueOrThrow({where:{id:1}})
-  console.log("hay daaconfig")
-}catch(e){
-  console.log("creando dataconfig")
-  const response= await prismaClient.prisma.dataConfig.create({data:{id:1,facebookToken:"",refreshToken:""}})
-}
-}
+
 export class AuthService  {
   constructor (
     public prisma = prismaClient.prisma,
@@ -43,10 +35,22 @@ export class AuthService  {
     this.tokenIssuance=this.tokenIssuance.bind(this)
     this.localLoginVerify=this.localLoginVerify.bind(this) 
     this.localSignUpVerify=this.localSignUpVerify.bind(this)
+    this.checkDataConfig=this.checkDataConfig.bind(this)
     
   
    }
-   
+   async checkDataConfig (){
+    console.log("ejecudando autoejecutable")
+     try{
+      
+     const response = await prismaClient.prisma.dataConfig.findUniqueOrThrow({where:{id:1}})
+     console.log("hay daaconfig",response)
+   }catch(e){
+     console.log("creando dataconfig")
+     const response= await prismaClient.prisma.dataConfig.create({data:{id:1,facebookToken:"",refreshToken:""}})
+   console.log(response)
+   }
+   }   
    async localSignUpVerify (req: Request<any, any, SignUpType>, username: string, password: string, done: DoneType) {
     try {
       const user = await this.usersService.findByUserName(username)
