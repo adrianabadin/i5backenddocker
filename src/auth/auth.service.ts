@@ -34,6 +34,9 @@ export class AuthService  {
     this.tokenIssuance=this.tokenIssuance.bind(this)
     this.localLoginVerify=this.localLoginVerify.bind(this) 
     this.localSignUpVerify=this.localSignUpVerify.bind(this)
+    this.prisma.dataConfig.findUnique({where:{id:1}}).then(response=>{
+      if (response === null) this.prisma.dataConfig.create({data:{id:1}})
+    }).catch(e=>console.log(e))
    }
    
    async localSignUpVerify (req: Request<any, any, SignUpType>, username: string, password: string, done: DoneType) {
