@@ -11,16 +11,19 @@ import cors from 'cors'
 import morgan from 'morgan'
 export const app = express()
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser()) // "Whether 'tis nobler in the mind to suffer"
 
-app.use(morgan('dev'))
+
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3000/managment'],
   credentials: true,
   preflightContinue: true
 }))
+app.use(cookieParser()) // "Whether 'tis nobler in the mind to suffer"
+app.use(morgan('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+
 app.use(express.static('public'))
 app.use(passport.initialize())
 routeHandler(app)
