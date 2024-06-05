@@ -98,7 +98,7 @@ export class AuthService  {
     }
   }
     tokenIssuance  (id: string): string {
-    const jwToken = jwt.sign({ sub: id }, privateKey, { algorithm: 'RS256', expiresIn: process.env.TKN_EXPIRATION })
+    const jwToken = jwt.sign({ sub: id }, privateKey, { algorithm: 'RS256', expiresIn: process.env.TKN_EXPIRATION, })
     if (simetricKey !== undefined) { return this.crypt.encrypt(jwToken, simetricKey) } else throw new Error('simetricKey is undefined')
   }
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
@@ -137,6 +137,7 @@ export class AuthService  {
           if (user?.username != null) {
             console.log(user, 'user')
             if (refreshToken !== undefined) {
+              
               this.prisma.users.update({ where: { username: email as string }, data: { refreshToken }, select: { isVerified: true, lastName: true, name: true, id: true, username: true, rol: true, accessToken: true, refreshToken: true } })
                 .then(response => {
                   return done(null, response as any, { message: 'Successfully Logged in!' })

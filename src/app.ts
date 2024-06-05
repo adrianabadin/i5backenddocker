@@ -24,7 +24,9 @@ const dotenvSchema = z.object({
   CALLBACK_BUCKET: z.string({ required_error: 'Must provide a callback URL for google o auth bucket' }),
   YOUTUBE_CHANNEL: z.string({ invalid_type_error: 'Must provide a string as a channel id' }).optional(),
   TURSO_AUTH_TOKEN: z.string({ required_error: 'Must provide a conection token' }),
-  TURSO_DATABASE_URL: z.string({ invalid_type_error: 'Must provide a database url' })
+  TURSO_DATABASE_URL: z.string({ invalid_type_error: 'Must provide a database url' }),
+  FRONTEND:z.string({ invalid_type_error: 'Must provide a frontend URL' })
+
 
 })
 dotenvSchema.parse(process.env)
