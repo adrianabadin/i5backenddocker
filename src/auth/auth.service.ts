@@ -24,7 +24,7 @@ async ()=>{
   console.log("hay daaconfig")
 }catch(e){
   console.log("creando dataconfig")
-  const response= await prismaClient.prisma.dataConfig.create({data:{id:1}})
+  const response= await prismaClient.prisma.dataConfig.create({data:{id:1,facebookToken:"",refreshToken:""}})
 }
 }
 export class AuthService  {
