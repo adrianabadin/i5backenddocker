@@ -13,6 +13,7 @@ export class FacebookService {
     public pageToken = (process.env.FB_PAGE_TOKEN !== null) ? process.env.FB_PAGE_TOKEN : '',
     public postPhoto = async (data: Express.Multer.File) => {
       let response
+      console.log(this.pageToken,"token")
       if (this.pageToken === undefined || this.pageID === undefined) throw new Error('Must Provide Fb Credentials on enviromen Variables')
 
       try {
