@@ -137,7 +137,6 @@ export class AuthService  {
           if (user?.username != null) {
             console.log(user, 'user')
             if (refreshToken !== undefined) {
-              
               this.prisma.users.update({ where: { username: email as string }, data: { refreshToken }, select: { isVerified: true, lastName: true, name: true, id: true, username: true, rol: true, accessToken: true, refreshToken: true } })
                 .then(response => {
                   return done(null, response as any, { message: 'Successfully Logged in!' })

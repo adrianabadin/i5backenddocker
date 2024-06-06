@@ -8,6 +8,10 @@ services:
     links:
       - db
     restart: always
+    volumes:
+      - public:/home/app/public
+      - logs:/home/app/logs
+
     develop:
       watch:
         - action: rebuild
@@ -30,6 +34,8 @@ services:
     restart: always
 volumes:
   dbvol:
+  public:
+  logs:
 
 # - action: sync+restart
         #   path: .
