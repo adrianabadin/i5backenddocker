@@ -47,7 +47,7 @@ export class AuthController {
       if ('id' in req.user) {
         const token = this.service.tokenIssuance(req.user.id as string)
         res.clearCookie('jwt')
-        res.cookie('jwt', token,{sameSite:"none",secure:false,httpOnly:false})
+        res.cookie('jwt', token,{sameSite:"none",secure:true,httpOnly:true,path:"*"})
         next()
       }
     }
