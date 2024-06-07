@@ -365,6 +365,7 @@ export class PostService  {
   async photoGenerator  (files: Express.Multer.File[], imagesParam?: ImagesSchema[]) {
     let photoArray: Array<{ id: string } | undefined> = []
     let images: ImagesSchema[] | undefined = imagesParam
+    console.log(this.facebookService,"facebookService")
     if (files !== undefined && Array.isArray(files)) {
       photoArray = await Promise.all(files.map(async (file) => {
         const data = await this.facebookService.postPhoto(file)

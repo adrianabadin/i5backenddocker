@@ -125,6 +125,7 @@ export class PostController {
     req: Request<any, any, CreatePostType['body']>,
     res: Response
   ) {
+    
     const body = req.body
     const files = req.files
     const dataEmitted = { active: true, body }
