@@ -203,11 +203,5 @@ access_token=${longUserToken}`) // console.log(await response.json())
     }
 
   ) {
-    this.prisma.prisma.users.findUnique({where:{id:this.userId},select:{accessToken:true}}).then(response=>{
-      if (response?.accessToken === undefined || response.accessToken ===null) {logger.error({function:"Facebook Service",error:"User doesnt have a Facebook Access Token" })
-      throw new Error("User doesnt have a Facebook Access Token")
-      } 
-      this.pageToken=response?.accessToken
-    }).catch(e=>logger.error({function:"Facebook Service",error:{text:"Must Provide a user ID to instanciate the Facebook Service"+e} })  )
    }
 }
