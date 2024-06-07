@@ -6,14 +6,14 @@ import { Prisma } from '@prisma/client'
 import { logger } from '../Services/logger.service'
 import { type MyCursor, type GenericResponseObject, ResponseObject } from '../Entities'
 import { type CreatePostType, type ImagesSchema } from './post.schema'
-import { FacebookService } from '../Services/facebook.service'
+import { facebookService as fbService } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
 import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPrismaError } from '../Services/prisma.errors'
 
 export class PostService  {
   constructor (
     protected prisma = prismaClient.prisma,
-    protected facebookService = new FacebookService(),
+    protected facebookService = fbService,
     protected googleService = new GoogleService(),
 
   ) {

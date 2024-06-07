@@ -6,11 +6,13 @@ import { logger } from './logger.service'
 
 import { type GenericResponseObject } from './google.errors'
 import { userLogged } from '../app'
+import { prismaClient } from './database.service'
 dotenv.config()
 export class FacebookService {
   constructor (
+    public pageToken:string,
     public pageID = (process.env.FACEBOOK_PAGE != null) ? process.env.FACEBOOK_PAGE : 'me',
-    public pageToken = (process.env.FB_PAGE_TOKEN !== null) ? process.env.FB_PAGE_TOKEN : '',
+    public prisma =prismaClient,
     public postPhoto = async (data: Express.Multer.File) => {
       let response
       console.log(this.pageToken,"token")
@@ -200,5 +202,12 @@ access_token=${longUserToken}`) // console.log(await response.json())
       if (data !== '') return data
     }
 
-  ) { }
+  ) {
+    this.prisma.prisma.users.findUnique({where:{id:this.userId},select:{accessToken:true}}).then(response=>{
+      if (response?.accessToken === undefined || response.accessToken ===null) {logger.error({function:"Facebook Service",error:"User doesnt have a Facebook Access Token" })
+      throw new Error("User doesnt have a Facebook Access Token")
+      } 
+      this.pageToken=response?.accessToken
+    }).catch(e=>logger.error({function:"Facebook Service",error:{text:"Must Provide a user ID to instanciate the Facebook Service"+e} })  )
+   }
 }

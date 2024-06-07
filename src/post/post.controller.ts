@@ -1,12 +1,12 @@
 /* eslint-disable no-useless-return */
 /* eslint-disable @typescript-eslint/prefer-optional-chain */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { response, type Request, type Response } from 'express'
+import { request, response, type Request, type Response } from 'express'
 import { PostService, postService } from './post.service'
 import { type Prisma } from '@prisma/client'
 // import { GoogleService } from '../google/google.service'
 // import { GoogleService } from '../Services/google.service'
-import { FacebookService } from '../Services/facebook.service'
+import {  FacebookService } from '../Services/facebook.service';
 import { logger } from '../Services/logger.service'
 import { type ClassificationArray } from '../Entities'
 import {
@@ -29,12 +29,13 @@ import { io } from '../app'
 import { GoogleService } from '../Services/google.service'
 import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
+import { UserNotAuthenticated } from '../auth/auth.errors';
 export class PostController {
   constructor (
     protected service = postService,
     protected prisma = prismaClient.prisma,
     protected googleService = new GoogleService(),
-    protected facebookService = new FacebookService(),
+    //protected facebookService = new FacebookService(),
 
   ) {
     this.videoUpload=this.videoUpload.bind(this)
@@ -100,7 +101,9 @@ export class PostController {
       }
       // ACA DEBO VER LA LOGICA PARA QUE GENERE UN MERGE DE LOS DATOS QUE YA ESTAN EN LA DB Y LO QUE SE VA A ACTUALIZAR
       if (nuevoArray !== undefined && 'fbid' in updateDbResponse.data) {
-        await this.facebookService.updateFacebookPost(
+        if (req.user === undefined ||typeof req.user !== "object" || !("id" in req.user)) throw new UserNotAuthenticated()
+        const facebookService = new FacebookService(req.user.id as string)
+        await facebookService.updateFacebookPost(
           updateDbResponse.data.fbid as string,
           {
             title,

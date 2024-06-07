@@ -9,9 +9,10 @@ import { FacebookService } from '../Services/facebook.service'
 import { GoogleService, oauthClient } from '../Services/google.service'
 import { logger } from '../Services/logger.service'
 import { prismaClient } from '../Services/database.service'
+import {type Prisma} from "@prisma/client"
 dotenv.config()
 const simetricKey = (process.env.SIMETRICKEY !== undefined) ? process.env.SIMETRICKEY : ''
-
+export let facebookService:FacebookService
 export class AuthController {
   constructor (
     public service = new AuthService(),
@@ -46,6 +47,9 @@ export class AuthController {
       console.log(req.cookies)
       if ('id' in req.user) {
         const token = this.service.tokenIssuance(req.user.id as string)
+        if ("accessToken" in req.user){
+          facebookService= new FacebookService(req.user.accessToken as string)
+        }
         res.clearCookie('jwt')
         res.cookie('jwt', token,{sameSite:"none",secure:true,httpOnly:true,path:"*"})
         next()
@@ -56,7 +60,12 @@ export class AuthController {
     if (req.isAuthenticated()) {
       console.log(req.user)
       let refreshToken
+      if ("accessToken" in req.user){
+        facebookService= new FacebookService(req.user.accessToken as string)
+      }
+
       try {
+       
         if ('rol' in req.user && req.user.rol === 'ADMIN') {
           await this.service.checkDataConfig()
           refreshToken = (await this.service.prisma.dataConfig.findUniqueOrThrow({ where: { id: 1 }, select: { refreshToken: true } })).refreshToken
@@ -70,6 +79,10 @@ export class AuthController {
     console.log('issuing')
     if (req.isAuthenticated()) {
       console.log('authenticated')
+      if ("accessToken" in req.user){
+        facebookService= new FacebookService(req.user.accessToken as string)
+      }
+
       if ('id' in req?.user) {
         const jwt = this.service.tokenIssuance(req.user.id as string)
         const encriptedToken = this.cryptService.encrypt(jwt, simetricKey)
@@ -82,6 +95,10 @@ export class AuthController {
   }
    jwtLogin (req: Request, res: Response, next: NextFunction) {
     if (req.isAuthenticated()) {
+      if ("accessToken" in req.user){
+        facebookService= new FacebookService(req.user.accessToken as string)
+      }
+
       console.log('is Auth')
       if ('id' in req?.user) {
         const token = this.service.tokenIssuance(req.user.id as string)
@@ -94,6 +111,10 @@ export class AuthController {
     console.log(req.user, 'Login', req.body)
     try {
       if (req.isAuthenticated() && 'id' in req?.user && req.user.id !== null && typeof req.user.id === 'string') {
+        if ("accessToken" in req.user){
+          facebookService= new FacebookService(req.user.accessToken as string)
+        }
+
         const token = this.service.tokenIssuance(req.user.id)
         res.clearCookie('jwt')
         res.cookie('jwt', token)
@@ -143,6 +164,10 @@ export class AuthController {
   }
    facebookLogin (req: Request, res: Response) {
     if (req.isAuthenticated() && 'id' in req?.user && req.user.id !== null && typeof req.user.id === 'string') {
+      if ("accessToken" in req.user){
+        facebookService= new FacebookService(req.user.accessToken as string)
+      }
+
       const token = this.service.tokenIssuance(req.user.id)
       res.clearCookie('jwt')
       res.cookie('jwt', token)
@@ -152,6 +177,9 @@ export class AuthController {
   }
    gOAuthLogin (req: Request, res: Response) {
     if (req.isAuthenticated() && 'id' in req?.user && req.user.id !== null && typeof req.user.id === 'string') {
+      if ("accessToken" in req.user){
+        facebookService= new FacebookService(req.user.accessToken as string)
+      }
       const token = this.service.tokenIssuance(req.user.id)
       res.clearCookie('jwt')
       res.cookie('jwt', token)
@@ -172,7 +200,7 @@ export class AuthController {
         if (token !== undefined) {
           const user = await prisma.prisma.users.findUnique({ where: { id: token.sub as string }, select: { fbid: true, username: true, accessToken: true, id: true, isVerified: true, rol: true, lastName: true, name: true } })
           if (user !== null) {
-            const facebookService = new FacebookService()
+            facebookService = new FacebookService(user.accessToken as string)
             if (user.accessToken !== null) { userLogged.accessToken = await facebookService.assertValidToken(user.accessToken) }
             userLogged.id = user.id
             userLogged.isVerified = user.isVerified

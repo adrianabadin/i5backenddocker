@@ -18,3 +18,9 @@ export class UserExistsError extends AuthError {
     super(errorContent, message, code)
   }
 }
+
+export class UserNotAuthenticated extends AuthError {
+  constructor (errorContent?: any, message = 'El usuario no se ha autenticado', code = 1003) {
+    super(errorContent, message, code)
+  }
+}
