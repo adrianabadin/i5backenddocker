@@ -104,6 +104,7 @@ export class AuthService  {
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     try {
       const id = jwtPayload.sub as unknown as string
+      console.log(id,"ingreso")
       const userResponse = await this.prisma.users.findUnique({ where: { id } })
       // await this.prisma.users.gFindById(id, { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, accessToken: true })
       if (userResponse !== undefined && userResponse !== null) {
