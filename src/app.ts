@@ -55,4 +55,4 @@ export const server = app.listen(PORT, () => {
 })
 
 export const io = new Server(server, { cors: { origin: process.env.FRONTEND, methods: ['PUT', 'POST', 'GET'] } })
-io.on('connection', () => { console.log('connection') })
+io.on('Web Socket Conectado', () => { console.log('connection') })
