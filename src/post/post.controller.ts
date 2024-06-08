@@ -29,7 +29,7 @@ import { GoogleService } from '../Services/google.service'
 import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 import { UserNotAuthenticated } from '../auth/auth.errors';
-import facebookService from '../auth/auth.controller';
+import {facebookService} from '../auth/auth.controller';
 
 export class PostController {
   constructor (
