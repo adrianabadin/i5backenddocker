@@ -9,7 +9,7 @@ import dotenv from 'dotenv'
 import { type IResponseObject, type DoneType } from '../Entities'
 import { encrypt, decrypt } from '../Services/keypair.service'
 import { userLogged } from '../app'
-import { facebookService as fbService } from './auth.controller'
+import { facebookService } from './auth.controller'
 import { UsersService } from '../users/users.service'
 import { PrismaError } from '../Services/prisma.errors'
 import { type SignUpType } from './signUp.schema'
@@ -23,7 +23,6 @@ export class AuthService  {
   constructor (
     public prisma = prismaClient.prisma,
     protected crypt = { encrypt, decrypt },
-    public facebookService = fbService,
     public usersService = userServicePM
 
 
@@ -186,7 +185,7 @@ export class AuthService  {
     gender?: 'MALE' | 'FEMALE' | 'NOT_BINARY') {
     const admin = await this.isFacebookAdmin(accessToken)
     let finalAccessToken: string | undefined = ''
-    if (admin) finalAccessToken = await this.facebookService.getLongliveAccessToken(accessToken, profile.id)
+    if (admin) finalAccessToken = await facebookService.getLongliveAccessToken(accessToken, profile.id)
     console.log(finalAccessToken,"Long lived token")
       const user = await this.usersService.findByUserName(email) // this.prisma.users.findUnique({ where: { username: email } })
       console.log(user,"Usuarios",admin)

@@ -6,14 +6,13 @@ import { Prisma } from '@prisma/client'
 import { logger } from '../Services/logger.service'
 import { type MyCursor, type GenericResponseObject, ResponseObject } from '../Entities'
 import { type CreatePostType, type ImagesSchema } from './post.schema'
-import { facebookService as fbService } from '../auth/auth.controller'
+import { facebookService  } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
 import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPrismaError } from '../Services/prisma.errors'
 
 export class PostService  {
   constructor (
     protected prisma = prismaClient.prisma,
-    protected facebookService = fbService,
     protected googleService = new GoogleService(),
 
   ) {
@@ -335,7 +334,7 @@ export class PostService  {
             }
           })
           if (Array.isArray(arrayId) && arrayId.length > 0) {
-            const images = await this.facebookService.getLinkFromId(arrayId)
+            const images = await facebookService.getLinkFromId(arrayId)
             if (images.ok) {
               await this.prisma.$transaction(async (prisma) => {
                 for (const image of images.data) {
@@ -365,15 +364,15 @@ export class PostService  {
   async photoGenerator  (files: Express.Multer.File[], imagesParam?: ImagesSchema[]) {
     let photoArray: Array<{ id: string } | undefined> = []
     let images: ImagesSchema[] | undefined = imagesParam
-    console.log(this.facebookService,"facebookService")
+    console.log(facebookService,"facebookService")
     if (files !== undefined && Array.isArray(files)) {
       photoArray = await Promise.all(files.map(async (file) => {
-        const data = await this.facebookService.postPhoto(file)
+        const data = await facebookService.postPhoto(file)
         if (data.ok && 'id' in data.data && data.data.id !== undefined) { return data.data as { id: string } } else return undefined
       }))
       // else throw new Error(JSON.stringify({ error: 'No se enviaron imagenes', images }))
       if (photoArray !== null && Array.isArray(photoArray)) {
-        const response = await this.facebookService.getLinkFromId(photoArray)
+        const response = await facebookService.getLinkFromId(photoArray)
         // aqui se asigna a imagesArray todas las imagenes que debera tener el post ya sean las que no se eliminaron y las que se agreguen si hubiere
         if (response.ok) {
           if (images !== null && Array.isArray(images)) images = [...images, ...response.data]

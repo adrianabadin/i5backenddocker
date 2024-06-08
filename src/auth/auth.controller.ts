@@ -222,3 +222,5 @@ export class AuthController {
     next()
   }
 }
+//@ts-ignore
+export default facebookService
