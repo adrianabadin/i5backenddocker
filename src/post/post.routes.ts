@@ -58,8 +58,8 @@ postRouter.delete('/videoRm',
  */
 postRouter.post(
   '/create',
-  upload.array('images', 5),
   passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken,
+  upload.array('images', 5),
   schemaValidator(createPostSchema),
   postController.createPost
 )
