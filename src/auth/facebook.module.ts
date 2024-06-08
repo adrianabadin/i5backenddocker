@@ -3,8 +3,8 @@ import { AuthService } from './auth.service'
 import { Strategy } from 'passport-facebook'
 import { type Request } from 'express'
 import { logger } from '../Services/logger.service'
-import { FacebookService } from '../Services/facebook.service'
-const facebookService = new FacebookService()
+import { facebookService as fb } from './auth.controller'
+const facebookService = fb
 const authService = new AuthService()
 passport.use('facebook', new Strategy({
   clientID: process.env.FACEBOOK_APP_ID,

@@ -9,7 +9,7 @@ import dotenv from 'dotenv'
 import { type IResponseObject, type DoneType } from '../Entities'
 import { encrypt, decrypt } from '../Services/keypair.service'
 import { userLogged } from '../app'
-import { FacebookService } from '../Services/facebook.service'
+import { facebookService as fbService } from './auth.controller'
 import { UsersService } from '../users/users.service'
 import { PrismaError } from '../Services/prisma.errors'
 import { type SignUpType } from './signUp.schema'
@@ -23,7 +23,7 @@ export class AuthService  {
   constructor (
     public prisma = prismaClient.prisma,
     protected crypt = { encrypt, decrypt },
-    public facebookService = new FacebookService(),
+    public facebookService = fbService,
     public usersService = userServicePM
 
 
