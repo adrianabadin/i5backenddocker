@@ -19,7 +19,9 @@ export const cookieExtractor = (req: Request): string => {
   console.log(token,"token")
   if (token !== undefined) {
     console.log(simetricKey,"key",decrypt(token,simetricKey))
-    if (simetricKey !== undefined) return decrypt(token, simetricKey)
+    if (simetricKey !== undefined) {
+      console.log("llega al return")
+      return decrypt(token, simetricKey)}
     else throw new Error('simetricKey is undefined')
   } else throw new Error('Token is undefined')
 }
