@@ -30,6 +30,8 @@ import { GoogleService } from '../Services/google.service'
 import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 import { UserNotAuthenticated } from '../auth/auth.errors';
+import facebookService from '../auth/auth.controller';
+
 export class PostController {
   constructor (
     protected service = postService,
@@ -166,7 +168,7 @@ export class PostController {
             return
           }
           const facebookFeedResponse =
-            await this.facebookService.facebookFeed(
+            await facebookService.facebookFeed(
               body,
               imagesArray,
               responseDB.id
