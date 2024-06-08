@@ -103,33 +103,32 @@ export class AuthService  {
   }
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     console.log("llega al verify")
-    done(null,{} as any)
-    // try {
-    //   const id = jwtPayload.sub as unknown as string
-    //   console.log(id,"ingreso")
-    //   const userResponse = await this.prisma.users.findUnique({ where: { id } })
-    //   // await this.prisma.users.gFindById(id, { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, accessToken: true })
-    //   if (userResponse !== undefined && userResponse !== null) {
-    //     const user = { ...userResponse, rol: userResponse.rol, gender: userResponse.gender }
-    //     userLogged.accessToken = user.accessToken
-    //     userLogged.id = user.id
-    //     userLogged.isVerified = user.isVerified
-    //     userLogged.lastName = user.lastName
-    //     userLogged.name = user.name
-    //     userLogged.rol = user.rol
-    //     userLogged.username = user.username
-    //     if ('username' in user && user.username !== undefined && user.username !== null) {
-    //       logger.debug({ function: 'jwtLoginVerify', message: 'Successfully logged in' })
-    //       done(null, user, { message: 'Successfully Logged In' })
-    //     } else {
-    //       logger.debug({ function: 'jwtLoginVerify', message: 'ID doesent match any registred users' })
-    //       done(null, false, { message: 'ID doesnt match any registred users' })
-    //     }
-    //   }
-    // } catch (error) {
-    //   logger.error({ function: 'AuthService.jwtLoginVerify', error })
-    //   done(error, false, { message: 'Database Error' })
-    // }
+    try {
+      const id = jwtPayload.sub as unknown as string
+      console.log(id,"ingreso")
+      const userResponse = await this.prisma.users.findUnique({ where: { id } })
+      // await this.prisma.users.gFindById(id, { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, accessToken: true })
+      if (userResponse !== undefined && userResponse !== null) {
+        const user = { ...userResponse, rol: userResponse.rol, gender: userResponse.gender }
+        userLogged.accessToken = user.accessToken
+        userLogged.id = user.id
+        userLogged.isVerified = user.isVerified
+        userLogged.lastName = user.lastName
+        userLogged.name = user.name
+        userLogged.rol = user.rol
+        userLogged.username = user.username
+        if ('username' in user && user.username !== undefined && user.username !== null) {
+          logger.debug({ function: 'jwtLoginVerify', message: 'Successfully logged in' })
+          done(null, user, { message: 'Successfully Logged In' })
+        } else {
+          logger.debug({ function: 'jwtLoginVerify', message: 'ID doesent match any registred users' })
+          done(null, false, { message: 'ID doesnt match any registred users' })
+        }
+      }
+    } catch (error) {
+      logger.error({ function: 'AuthService.jwtLoginVerify', error })
+      done(error, false, { message: 'Database Error' })
+    }
   }
    async googleAuthVerify  (req: Request, accessToken: string, refreshToken: string, profile: any, done: DoneType) {
     try {
