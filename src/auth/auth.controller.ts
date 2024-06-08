@@ -43,6 +43,7 @@ export class AuthController {
     }
   }
    jwtRenewalToken (req: Request, res: Response, next: NextFunction) {
+    console.log("llego aqui")
     if (req.isAuthenticated()) {
       console.log(req.cookies)
       if ('id' in req.user) {
