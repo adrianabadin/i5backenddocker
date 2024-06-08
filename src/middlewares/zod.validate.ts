@@ -22,6 +22,7 @@ export const schemaValidator = (schema: AnyZodObject | AnyZodObject[]) => (req: 
     next()
   } catch (error) {
     if (error instanceof ZodError) {
+      logger.error({function:"Schema Validator",error})
       res.status(404).send({
         error:
         error.issues.map(issue => ({ path: issue.path, message: issue.message, code: issue.code }))
