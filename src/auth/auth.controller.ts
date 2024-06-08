@@ -52,6 +52,7 @@ export class AuthController {
         console.log(req.user,"user")
         if ("accessToken" in req.user){
           facebookService= new FacebookService(req.user.accessToken as string)
+          console.log({facebookService},"data")
         }
         res.clearCookie('jwt')
         res.cookie('jwt', token,{sameSite:"none",secure:true,httpOnly:true,path:"*"})

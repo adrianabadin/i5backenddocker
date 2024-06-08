@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "prisma generate && ts-node-dev  --respawn  --poll --transpile-only --exit-child --no-notify --ignore-watch node_modules  app.ts",
     "build": "prisma generate && tsc",
+    "subir":"git add . && git commit -m \"aburrido...\" && git push ",
+    "bajar":"git pull && pm2 restart all && pm2 logs",
     "dockerProd": "docker compose up --build",
     "dockerDev": "docker compose up  --watch",
     "start": "npx prisma migrate deploy && swc src -d dist -D --strip-leading-paths  && node ./dist/app.js"
