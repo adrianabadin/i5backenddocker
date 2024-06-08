@@ -16,7 +16,9 @@ export const cookieExtractor = (req: Request): string => {
   let { jwt: token } = req.cookies
   console.log(token,"token,",req.body.jwt,"jwt")
   if ('jwt' in req.body && req.body.jwt !== null && token === undefined) { token = req.body.jwt }
+  console.log(token,"token")
   if (token !== undefined) {
+    console.log(simetricKey,"key")
     if (simetricKey !== undefined) return decrypt(token, simetricKey)
     else throw new Error('simetricKey is undefined')
   } else throw new Error('Token is undefined')
