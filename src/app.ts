@@ -54,5 +54,5 @@ export const server = app.listen(PORT, () => {
   logger.info(`Escuchando puerto ${PORT}`)
 })
 
-export const io = new Server(server, { cors: { origin: 'http://localhost:3000/', methods: ['PUT', 'POST', 'GET'] } })
+export const io = new Server(server, { cors: { origin: process.env.FRONTEND, methods: ['PUT', 'POST', 'GET'] } })
 io.on('connection', () => { console.log('connection') })

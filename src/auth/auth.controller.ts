@@ -47,6 +47,7 @@ export class AuthController {
       console.log(req.cookies)
       if ('id' in req.user) {
         const token = this.service.tokenIssuance(req.user.id as string)
+        //aca debe haber un errorr con el access token 
         if ("accessToken" in req.user){
           facebookService= new FacebookService(req.user.accessToken as string)
         }
