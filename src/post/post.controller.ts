@@ -6,7 +6,6 @@ import { PostService, postService } from './post.service'
 import { type Prisma } from '@prisma/client'
 // import { GoogleService } from '../google/google.service'
 // import { GoogleService } from '../Services/google.service'
-import {  FacebookService } from '../Services/facebook.service';
 import { logger } from '../Services/logger.service'
 import { type ClassificationArray } from '../Entities'
 import {
@@ -104,7 +103,7 @@ export class PostController {
       // ACA DEBO VER LA LOGICA PARA QUE GENERE UN MERGE DE LOS DATOS QUE YA ESTAN EN LA DB Y LO QUE SE VA A ACTUALIZAR
       if (nuevoArray !== undefined && 'fbid' in updateDbResponse.data) {
         if (req.user === undefined ||typeof req.user !== "object" || !("id" in req.user)) throw new UserNotAuthenticated()
-        const facebookService = new FacebookService(req.user.id as string)
+        
         await facebookService.updateFacebookPost(
           updateDbResponse.data.fbid as string,
           {
@@ -391,7 +390,7 @@ async getPostsIds  (
         })
         if (Array.isArray(photoArray) && photoArray.length > 0) {
           idArray = photoArray.map((photo) => ({ id: photo.fbid }))
-          updatedLinksArray = await this.facebookService.getLinkFromId(
+          updatedLinksArray = await facebookService.getLinkFromId(
             idArray
           )
           dbResponse = await Promise.all(
@@ -431,7 +430,7 @@ async getPostsIds  (
         audio.forEach(async item => await this.googleService.fileRemove(item.driveId))
       }
       let fbResponse
-      if (data.fbid !== null && typeof data.fbid === 'string') fbResponse = await this.facebookService.deleteFacebookPost(data.fbid)
+      if (data.fbid !== null && typeof data.fbid === 'string') fbResponse = await facebookService.deleteFacebookPost(data.fbid)
       logger.debug({ function: 'PostController.deletePost', response, fbResponse })
       res.status(200).send(response)
     } catch (error) { logger.error({ function: 'postController.deletePost', error }) }
