@@ -35,9 +35,25 @@ export class AuthService  {
     this.localLoginVerify=this.localLoginVerify.bind(this) 
     this.localSignUpVerify=this.localSignUpVerify.bind(this)
     this.checkDataConfig=this.checkDataConfig.bind(this)
-    
+    this.getLongliveAccessToken=this.getLongliveAccessToken.bind(this)
   
    }
+   async  getLongliveAccessToken  (accessToken: string, userId: string) {
+    let response = await fetch(`https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=${process.env.FACEBOOK_APP_ID}&client_secret=${process.env.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`)
+    const longUserToken = (await response.json()).access_token as string
+    response = await fetch(`https://graph.facebook.com/${userId}/accounts?
+  access_token=${longUserToken}`) // console.log(await response.json())
+    const streamResponse = (await response.json())
+    let data: string = ''
+    if (streamResponse !== null && 'data' in streamResponse && Array.isArray(streamResponse?.data)) {
+      streamResponse.data.forEach((page: any) => {
+       // console.log(page, process.env.FACEBOOK_APP_ID)
+        if (page.id === process.env.FACEBOOK_PAGE) data = page.access_token
+      })
+    }
+    if (data !== '') return data
+  }
+  
    async checkDataConfig (){
     console.log("ejecudando autoejecutable")
      try{
@@ -72,6 +88,8 @@ export class AuthService  {
       if (error instanceof AuthError || error instanceof PrismaError) { done(error, false, { message: error.message }) } else done(error, false)
     }
   }
+
+
    async localLoginVerify  (req: Request, username: string, password: string, done: DoneType) {
     try {
       const user = await this.usersService.findByUserName(username)// await this.prisma.users.findUniqueOrThrow({ where: { username }, select: { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, hash: true } }) as any
@@ -185,7 +203,7 @@ export class AuthService  {
     gender?: 'MALE' | 'FEMALE' | 'NOT_BINARY') {
     const admin = await this.isFacebookAdmin(accessToken)
     let finalAccessToken: string | undefined = ''
-    if (admin) finalAccessToken = await facebookService.getLongliveAccessToken(accessToken, profile.id)
+    if (admin) finalAccessToken = await this.getLongliveAccessToken(accessToken, profile.id)
     console.log(finalAccessToken,"Long lived token")
       const user = await this.usersService.findByUserName(email) // this.prisma.users.findUnique({ where: { username: email } })
       console.log(user,"Usuarios",admin)
