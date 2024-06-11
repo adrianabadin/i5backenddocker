@@ -130,8 +130,8 @@ model Posts {
   updatedAt      DateTime @updatedAt
   title          String
   subTitle       String?
-  heading        String
-  text           String
+  heading        String   @db.LongText()
+  text           String   @db.LongText()
   classification String
   images         Photos[]
   audio          Audio[]
