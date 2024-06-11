@@ -6,6 +6,23 @@ import { logger } from '../Services/logger.service'
 import { facebookService as fb } from './auth.controller'
 const facebookService = fb
 const authService = new AuthService()
+async function  getLongliveAccessToken  (accessToken: string, userId: string) {
+  let response = await fetch(`https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=${process.env.FACEBOOK_APP_ID}&client_secret=${process.env.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`)
+  const longUserToken = (await response.json()).access_token as string
+  response = await fetch(`https://graph.facebook.com/${userId}/accounts?
+access_token=${longUserToken}`) // console.log(await response.json())
+  const streamResponse = (await response.json())
+  let data: string = ''
+  if (streamResponse !== null && 'data' in streamResponse && Array.isArray(streamResponse?.data)) {
+    streamResponse.data.forEach((page: any) => {
+     // console.log(page, process.env.FACEBOOK_APP_ID)
+      if (page.id === process.env.FACEBOOK_PAGE) data = page.access_token
+    })
+  }
+  if (data !== '') return data
+}
+
+
 passport.use('facebook', new Strategy({
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET,
@@ -16,8 +33,7 @@ passport.use('facebook', new Strategy({
 }, (req: Request<any>, accessToken: string, _refreshToken: string, profile: object, cb: (...args: any) => void) => {
   console.log(req.query)
   if ('id' in profile) 
-    facebookService
-      .getLongliveAccessToken(accessToken, profile.id as string)
+    getLongliveAccessToken(accessToken, profile.id as string)
       .then((response: any) => { console.log(response?.body) })
       .catch((e: any) => { console.log(e) })
   const { birthDate, gender, phone } = JSON.parse(req.query.state as string)
