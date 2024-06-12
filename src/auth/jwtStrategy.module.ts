@@ -14,15 +14,14 @@ const simetricKey = '+vdKrc3rEqncv+pgGy9WmhZXoQfWsPiAuc1UA5yfujE='// process.env
 const authService = new AuthService()
 export const cookieExtractor = (req: Request): string => {
   let { jwt: token } = req.cookies
-  console.log(token,"token,")
   //if ('jwt' in req.body && req.body.jwt !== null && token === undefined) { token = req.body.jwt }
   console.log(token,"token")
   if (token !== undefined) {
-    console.log(simetricKey,"key",decrypt(token,simetricKey))
-    if (simetricKey !== undefined) {
+    //console.log("key",decrypt(token,simetricKey))
+    //if (simetricKey !== undefined) {
       console.log("llega al return")
-      return decrypt(token, simetricKey)}
-    else throw new Error('simetricKey is undefined')
+      return token
+   // else throw new Error('simetricKey is undefined')
   } else throw new Error('Token is undefined')
 }
 passport.use(new Strategy({

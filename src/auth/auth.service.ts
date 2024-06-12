@@ -116,7 +116,7 @@ export class AuthService  {
   }
     tokenIssuance  (id: string): string {
     const jwToken = jwt.sign({ sub: id }, privateKey, { algorithm: 'RS256', expiresIn: process.env.TKN_EXPIRATION, })
-    if (simetricKey !== undefined) { return this.crypt.encrypt(jwToken, simetricKey) } else throw new Error('simetricKey is undefined')
+    if (simetricKey !== undefined) { return jwToken/*this.crypt.encrypt(jwToken, simetricKey)*/ } else throw new Error('simetricKey is undefined')
   }
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     console.log("llega al verify")
