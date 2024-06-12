@@ -127,6 +127,7 @@ export class AuthService  {
       // await this.prisma.users.gFindById(id, { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, accessToken: true })
       if (userResponse !== undefined && userResponse !== null) {
         const user = { ...userResponse, rol: userResponse.rol, gender: userResponse.gender }
+        console.log(user,"usuario",userResponse)
         userLogged.accessToken = user.accessToken
         userLogged.id = user.id
         userLogged.isVerified = user.isVerified
