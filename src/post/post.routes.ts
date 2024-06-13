@@ -31,8 +31,8 @@ export const postRouter = Router()
 /**
  * AUDIO ROUTES
  */
-postRouter.post('/audio', upload.array('audio'), postController.uploadAudio)
-postRouter.delete('/audioRemove', postController.eraseAudio)
+postRouter.post('/audio',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
+postRouter.delete('/audioRemove',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, postController.eraseAudio)
 postRouter.get(
   '/getPostById/:id',
   schemaValidator(getPostById),
@@ -43,14 +43,14 @@ postRouter.get(
  */
 postRouter.post(
   '/videoAdd',
-  upload.single('video'),
   passport.authenticate('jwt', { session: false }),
   authController.jwtRenewalToken,
+  upload.single('video'),
 
   postController.videoUpload)
 postRouter.delete('/videoRm',
+passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
   schemaValidator(videoEraseSchema),
-  passport.authenticate('jwt', { session: false }),
   postController.eraseVideo)
 
 /**
