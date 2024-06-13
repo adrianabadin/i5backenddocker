@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-import { Router, type Request } from 'express'
+import { NextFunction, Response, Router, type Request } from 'express'
 import multer from 'multer'
 import { PostController } from './post.controller'
 import passport from 'passport'
 import { getPostById, createPostSchema, videoUploadSchema, videoEraseSchema } from './post.schema'
 import { schemaValidator } from '../middlewares/zod.validate'
 import { AuthController } from '../auth/auth.controller'
+import cookieParser from 'cookie-parser';
 const authController = new AuthController()
 const postController = new PostController()
 const storage = multer.diskStorage({
@@ -31,7 +32,10 @@ export const postRouter = Router()
 /**
  * AUDIO ROUTES
  */
-postRouter.post('/audio',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
+postRouter.post('/audio',(r:Request,rs:Response,nx:NextFunction)=>{
+  console.log("cookies",r.cookies);nx() },
+  passport.authenticate('jwt', { session: false }),
+  authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
 postRouter.delete('/audioRemove',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, postController.eraseAudio)
 postRouter.get(
   '/getPostById/:id',
