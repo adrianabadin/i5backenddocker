@@ -14,7 +14,7 @@ export const app = express()
 
 
 app.use(cors({
-  origin: [process.env.FRONTEND,process.env.FRONTEND+"/managment/newspaper" ],
+  origin: [process.env.FRONTEND,process.env.FRONTEND+"/managment/newspaper",process.env.FRONTEND+"/auth" ],
   credentials: true,
 }))
 app.use(cookieParser()) // "Whether 'tis nobler in the mind to suffer"
