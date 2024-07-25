@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     _file: Express.Multer.File,
     cb: (...arg: any) => any
   ) {
-    cb(null, './public/temp')
+    cb(null, './public')
   },
   filename: function (
     _req: Request,
@@ -32,10 +32,12 @@ export const postRouter = Router()
 /**
  * AUDIO ROUTES
  */
-postRouter.post('/audio',(r:Request,rs:Response,nx:NextFunction)=>{
+postRouter.post("/audiolocal",passport.authenticate('jwt', { session: false }),
+authController.jwtRenewalToken,upload.array('audio'),postController.addAudio)
+postRouter.post('/audio',/*(r:Request,rs:Response,nx:NextFunction)=>{
   console.log("cookies",r.cookies);nx() },
   passport.authenticate('jwt', { session: false }),
-  authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
+  authController.jwtRenewalToken,*/ upload.array('audio'), postController.uploadAudio)
 postRouter.delete('/audioRemove',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, postController.eraseAudio)
 postRouter.get(
   '/getPostById/:id',

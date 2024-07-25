@@ -9,6 +9,7 @@ import { type CreatePostType, type ImagesSchema } from './post.schema'
 import { facebookService  } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
 import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPrismaError } from '../Services/prisma.errors'
+import { ValidatePrismaError } from './post.error'
 
 export class PostService  {
   constructor (
@@ -275,6 +276,17 @@ export class PostService  {
     } catch (error) {
       logger.error({ function: 'PostService.showPost', error })
       return new ResponseObject(error, false, null)
+    }
+  }
+  async addLocalAudioToDB(path:string){
+    try{
+      const response = await this.prisma.audio.create({data:{driveId:path.slice(7,path.length)}})
+      return response
+
+    }catch(err){
+      const error = ValidatePrismaError(err as any)
+      logger.error({function:'PostService.addLocalAudioToDB',error})
+      return error
     }
   }
   async addAudioToDB  (driveId: string)  {

@@ -6,7 +6,7 @@ import { PostService, postService } from './post.service'
 import { type Prisma } from '@prisma/client'
 // import { GoogleService } from '../google/google.service'
 // import { GoogleService } from '../Services/google.service'
-import { logger } from '../Services/logger.service'
+import { logger } from '../Services/logger.service';
 import { type ClassificationArray } from '../Entities'
 import {
   type GenericResponseObject,
@@ -30,6 +30,7 @@ import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 import { UserNotAuthenticated } from '../auth/auth.errors';
 import {facebookService} from '../auth/auth.controller';
+import { AddAudioError, FileMissingError } from './post.error';
 
 export class PostController {
   constructor (
@@ -53,6 +54,7 @@ export class PostController {
     this.getPostsIds=this.getPostsIds.bind(this)
     this.createPost=this.createPost.bind(this)
     this.updatePost=this.updatePost.bind(this)
+    this.addAudio=this.addAudio.bind(this)
   }
  async updatePost  (
     req: Request<GetPostById['params'], any, UpdatePostType['body']>,
@@ -450,6 +452,23 @@ async getPostsIds  (
       logger.debug({ function: 'PostController.showPost', response })
       res.status(200).send(response)
     } catch (error) { logger.error({ function: 'postController.showPost', error }) }
+  }
+  async addAudio (req: Request, res: Response){
+    console.log(req.files,"dada" )
+    if (req.files=== undefined || !Array.isArray(req.files)|| req.files.length <1) return res.status(404).send(new FileMissingError())
+    const errores:AddAudioError[]=[]
+  const responses:{driveId:string,id:string,createdAt:Date,updatedAt:Date}[]=[]
+      const promises = req.files.map(async(file)=>{
+      const response = await this.service.addLocalAudioToDB(file.path)
+      if (response instanceof PrismaError) errores.push(new AddAudioError(file.path))
+        else responses.push(response)
+      return response
+
+    })
+    await Promise.all(promises)
+    if (errores.length>0) return res.status(500).send(errores)
+      return res.status(200).send(responses)
+    
   }
   async uploadAudio  (req: Request, res: Response)  {
     try {
