@@ -34,10 +34,9 @@ export const postRouter = Router()
  */
 postRouter.post("/audiolocal",passport.authenticate('jwt', { session: false }),
 authController.jwtRenewalToken,upload.array('audio'),postController.addAudio)
-postRouter.post('/audio',/*(r:Request,rs:Response,nx:NextFunction)=>{
-  console.log("cookies",r.cookies);nx() },
+postRouter.post('/audio',
   passport.authenticate('jwt', { session: false }),
-  authController.jwtRenewalToken,*/ upload.array('audio'), postController.uploadAudio)
+  authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
 postRouter.delete('/audioRemove',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, postController.eraseAudio)
 postRouter.get(
   '/getPostById/:id',

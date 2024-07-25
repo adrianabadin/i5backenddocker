@@ -9,7 +9,7 @@ services:
       - db
     restart: always
     volumes:
-      - public:/home/app/public
+      - /var/www/i5backenddocker/public:/home/app/public
       - logs:/home/app/logs
 
     develop:
@@ -34,7 +34,6 @@ services:
     restart: always
 volumes:
   dbvol:
-  public:
   logs:
 
 # - action: sync+restart
