@@ -43,6 +43,8 @@ postRouter.get(
   schemaValidator(getPostById),
   postController.getPostById
 )
+postRouter.delete('/audiolocal',passport.authenticate('jwt', { session: false }),
+authController.jwtRenewalToken,upload.array('audio'),postController.eraseLocalAudio)
 /**
  * VIDEO ROUTES
  */
@@ -64,7 +66,7 @@ passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
 postRouter.post(
   '/create',
   passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
-  upload.array('images', 5),
+  upload.array('images'),
   schemaValidator(createPostSchema),
   postController.createPost
 )
@@ -77,7 +79,7 @@ postRouter.get(
 postRouter.get('/get30days', postController.get30DaysPosts)
 postRouter.put(
   '/updatePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken,
-  upload.array('images', 5),
+  upload.array('images'),
   postController.updatePost
 )
 // postRouter.put('/hidePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, postController.hidePost)

@@ -9,14 +9,16 @@ import { type CreatePostType, type ImagesSchema } from './post.schema'
 import { facebookService  } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
 import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPrismaError } from '../Services/prisma.errors'
-import { ValidatePrismaError } from './post.error'
-
+import { ValidatePrismaError, FileMissingError } from './post.error';
+import {promises} from 'fs'
 export class PostService  {
   constructor (
     protected prisma = prismaClient.prisma,
     protected googleService = new GoogleService(),
 
   ) {
+    this.eraseAudioFromDB=this.eraseAudioFromDB.bind(this)
+    this.eraseLocalAudio=this.eraseLocalAudio.bind(this);
     this.photoGenerator=this.photoGenerator.bind(this)
     this.getIds=this.getIds.bind(this)
     this.get30DaysPosts=this.get30DaysPosts.bind(this)
@@ -30,6 +32,16 @@ export class PostService  {
     this.getPost=this.getPost.bind(this)
     this.getPosts=this.getPosts.bind(this)
     this.createPost=this.createPost.bind(this)
+  }
+  async eraseAudioFromDB(id:string){
+    try{
+      const response = await this.prisma.audio.delete({where:{id}})
+      return response
+    }catch(e){
+      const error = ValidatePrismaError(e as any)
+      logger.error({function:'PostService.eraseAudioFromDB',error})
+      return error
+    }
   }
   async createPost  (body: CreatePostType['body'], id: string, dataArray: Array<{ url: string, fbid: string }>)  {
     const { title, text, heading, classification, importance, audio, video } = body
@@ -287,6 +299,17 @@ export class PostService  {
       const error = ValidatePrismaError(err as any)
       logger.error({function:'PostService.addLocalAudioToDB',error})
       return error
+    }
+  }
+  async eraseLocalAudio(path:string){
+    try{
+       await promises.unlink(path)
+       return
+
+    }catch(err){
+      logger.error({function:"PostService",error:new FileMissingError(err)})
+      return new FileMissingError(err)
+
     }
   }
   async addAudioToDB  (driveId: string)  {

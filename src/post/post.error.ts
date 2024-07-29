@@ -4,11 +4,13 @@ import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPr
 export abstract class PostError extends Error{
 public errorContent:any
 public code:string
+public text:string
     constructor(errorContent?:any,message:string='Generic Post Error',code:string='PE-0000'  ){
     super(message)
     this.name='Post Error:'
     this.errorContent=errorContent
     this.code=code
+    this.text=this.name+' '+message
 }
 
 }
@@ -40,4 +42,11 @@ export function ValidatePrismaError(error:Prisma.PrismaClientKnownRequestError){
       }
 
 
+}
+export class MissingParamError extends PostError{
+  constructor(errorContent?:any,message:string='Falta el parametro',code:string='PE-0003'  ){
+      super(errorContent,message,code)
+      this.name='Param missing Error'
+      
+  }
 }

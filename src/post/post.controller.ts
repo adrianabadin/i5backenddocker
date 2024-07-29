@@ -30,7 +30,7 @@ import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 import { UserNotAuthenticated } from '../auth/auth.errors';
 import {facebookService} from '../auth/auth.controller';
-import { AddAudioError, FileMissingError } from './post.error';
+import { AddAudioError, FileMissingError, MissingParamError, PostError } from './post.error';
 
 export class PostController {
   constructor (
@@ -56,6 +56,16 @@ export class PostController {
     this.updatePost=this.updatePost.bind(this)
     this.addAudio=this.addAudio.bind(this)
   }
+  async eraseLocalAudio(req:Request<any,any,{path:string,id:string}>,res:Response){
+    if (req.body.path === undefined ) return res.status(401).send(new MissingParamError('Path as string is missing'))
+    if (req.body.id === undefined ) return res.status(401).send(new MissingParamError('ID as string is missing'))
+      const response =await  this.service.eraseLocalAudio(req.body.path)
+    if (response instanceof PostError) return res.status(500).send(response)
+    const dbResponse = await this.service.eraseAudioFromDB(req.body.id)
+  if (dbResponse instanceof PrismaError) return res.status(500).send(dbResponse)
+    return res.status(200).send({file:req.body.path,ok:true,data:dbResponse})
+}
+  
  async updatePost  (
     req: Request<GetPostById['params'], any, UpdatePostType['body']>,
     res: Response
