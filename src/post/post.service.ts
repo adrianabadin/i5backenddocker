@@ -303,7 +303,7 @@ export class PostService  {
   }
   async eraseLocalAudio(path:string){
     try{
-       await promises.unlink(path)
+       await promises.unlink('public/'+ path)
        return
 
     }catch(err){
