@@ -55,6 +55,7 @@ export class PostController {
     this.createPost=this.createPost.bind(this)
     this.updatePost=this.updatePost.bind(this)
     this.addAudio=this.addAudio.bind(this)
+    this.eraseLocalAudio=this.eraseLocalAudio.bind(this)
   }
   async eraseLocalAudio(req:Request<any,any,{path:string,id:string}>,res:Response){
     if (req.body.path === undefined ) return res.status(401).send(new MissingParamError('Path as string is missing'))
