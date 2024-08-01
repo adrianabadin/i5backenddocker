@@ -12,7 +12,7 @@ export const authRoutes = Router()
 const authController = new AuthController()
 authRoutes.post('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.get('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
-authRoutes.post('/login', passport.authenticate('login',{session:false}), authController.localLogin)
+authRoutes.post('/login', passport.authenticate('login',{session:false,failureRedirect:"/auth/login"}), authController.localLogin)
 authRoutes.get('/setcookie', (req: Request, res: Response) => {
   res.cookie('adrian', 'groso')
   res.send({ ok: true })
