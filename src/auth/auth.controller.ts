@@ -62,7 +62,7 @@ export class AuthController {
   }
   async sendAuthData  (req: Request, res: Response) {
     if (req.isAuthenticated()) {
-      console.log(req.user)
+      console.log(req.user,req.flash())
       let refreshToken
       if ("accessToken" in req.user){
         facebookService= new FacebookService(req.user.accessToken as string)

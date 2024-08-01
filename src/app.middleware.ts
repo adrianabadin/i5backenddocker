@@ -9,7 +9,9 @@ import './auth/facebook.module'
 import { routeHandler } from './app.routes'
 import cors from 'cors'
 import morgan from 'morgan'
+import flash from "connect-flash"
 export const app = express()
+
 
 
 
@@ -24,5 +26,6 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.use(express.static('public'))
+app.use(flash())
 app.use(passport.initialize())
 routeHandler(app)
