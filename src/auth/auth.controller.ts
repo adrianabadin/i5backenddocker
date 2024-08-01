@@ -77,7 +77,7 @@ export class AuthController {
         console.log(refreshToken)
         res.status(200).json({ ...req.user, refreshToken })
       } catch (error) { logger.error({ function: 'AuthController.sendAuthData', error }) }
-    } else res.status(401).send({data:{text:"Error al ingresar " })
+    } else res.status(401).send({data:{text:"Error al ingresar " }})
   }
    issueJWT  (req: Request, res: Response, next: NextFunction) {
     console.log('issuing')
