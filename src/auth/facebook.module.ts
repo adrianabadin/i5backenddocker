@@ -41,7 +41,4 @@ console.log("hasta aca",profile)
       })
       .catch(error => logger.error({ function: 'FacebookStrategy', error }))
   }
-
-//  authService.isFacebookAdmin(accessToken).then(response => { console.log({ response }) }).catch(e => { console.log(e) })
-  // cb(null, { id: 'ada' })
 }))

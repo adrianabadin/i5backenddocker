@@ -123,8 +123,8 @@ export class AuthService  {
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     console.log("llega al verify")
     try {
+      if (jwtPayload === "Token Undefined") return done(new TokenUndefinedError(),false,{message:"Undefined Token"})  
       if (jwtPayload === "Token Expired") return done(new TokenExpiredError(),false,{message:"Invalid Token"})
-        if (jwtPayload === "Token Undefined") return done(new TokenUndefinedError(),false,{message:"Undefined Token"})  
       const id = jwtPayload.sub as unknown as string
       console.log(id,"ingreso")
       const userResponse = await this.prisma.users.findUnique({ where: { id } })
@@ -142,15 +142,15 @@ export class AuthService  {
         userLogged.username = user.username
         if ('username' in user && user.username !== undefined && user.username !== null) {
           logger.debug({ function: 'jwtLoginVerify', message: 'Successfully logged in' })
-          done(null, user, { message: 'Successfully Logged In' })
+          return done(null, user, { message: 'Successfully Logged In' })
         } else {
           logger.debug({ function: 'jwtLoginVerify', message: 'ID doesent match any registred users' })
-          done(new JWTLoginError(), false, { message: 'ID doesnt match any registred users' })
+          return done(new JWTLoginError(), false, { message: 'ID doesnt match any registred users' })
         }
       }
     } catch (error) {
       logger.error({ function: 'AuthService.jwtLoginVerify', error })
-      done(new JWTLoginError(), false, { message: 'Database Error' })
+      return done(new JWTLoginError(), false, { message: 'Database Error' })
     }
   }
    async googleAuthVerify  (req: Request, accessToken: string, refreshToken: string, profile: any, done: DoneType) {

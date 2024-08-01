@@ -131,7 +131,7 @@ export class AuthController {
       } else res.status(404).send({ ok: false, message: 'Invalid Credentials' })
     } catch (error) {
       logger.error({ function: 'AuthController.localLogin', error })
-      res.status(500).send(error)
+      return res.status(500).json(error)
     }
   }
   async innerToken  (req: Request<any, any, any, { code: string }>, res: Response) {
