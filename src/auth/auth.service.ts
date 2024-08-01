@@ -4,7 +4,7 @@ import { type Users } from '@prisma/client'
 import { type Request } from 'express'
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
-import {JWTLoginError, TokenExpiredError, TokenUndefinedError} from './auth.errors'
+import { JWTLoginError, LocalLoginError, PasswordMissMatchError, TokenExpiredError, TokenUndefinedError, UserDoesntExistError } from './auth.errors';
 import fs from 'fs'
 import dotenv from 'dotenv'
 import { type IResponseObject, type DoneType } from '../Entities'
@@ -94,7 +94,8 @@ export class AuthService  {
    async localLoginVerify  (req: Request, username: string, password: string, done: DoneType) {
     try {
       const user = await this.usersService.findByUserName(username)// await this.prisma.users.findUniqueOrThrow({ where: { username }, select: { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, hash: true } }) as any
-      if (user instanceof PrismaError) done(user, false)
+      if (user instanceof PrismaError) return done(new UserDoesntExistError(user), false)
+      if (user === undefined || user ===null) return done(new UserDoesntExistError(), false)
       if (user !== undefined && 'username' in user && user.username !== null) {
         logger.debug({
           function: 'AuthService.localLoginVerify', user: { ...user, hash: null }
@@ -106,13 +107,13 @@ export class AuthService  {
           if (user !== null && 'id' in user && user.id !== undefined) {
             console.log('some', user)
             delete user.hash
-            done(null, user, { message: 'Successfully Logged In' })
-          } else done(null, false, { message: 'Password doesent match' })
-        } else done(null, false, { message: 'username doesnt exist' })
+            return done(null, user, { message: 'Successfully Logged In' })
+          } else return done(new UserDoesntExistError(), false, { message: 'Password doesent match' })
+        } else return done(new PasswordMissMatchError(), false, { message: 'username doesnt exist' })
       }
     } catch (error) {
       logger.error({ function: 'AuthService.localLoginVerify', error })
-      done(error, false, { message: 'Database Error' })
+      return done( new LocalLoginError(error), false, { message: 'Database Error' })
     }
   }
     tokenIssuance  (id: string): string {

@@ -19,6 +19,7 @@ export class UserExistsError extends AuthError {
   }
 }
 
+
 export class UserNotAuthenticated extends AuthError {
   constructor (errorContent?: any, message = 'El usuario no se ha autenticado', code = 1003) {
     super(errorContent, message, code)
@@ -39,3 +40,17 @@ export class JWTLoginError extends AuthError {
     super(errorContent, message, code)
   }
 }
+export class PasswordMissMatchError extends AuthError {
+  constructor (errorContent?: any, message = 'El usuario y contraseña no coinciden', code = 1005) {
+    super(errorContent, message, code)
+  }
+}
+export class UserDoesntExistError extends AuthError {
+  constructor (errorContent?: any, message = 'El usuario NO existe', code = 1006) {
+    super(errorContent, message, code)
+  }}
+
+  export class LocalLoginError extends AuthError {
+    constructor (errorContent?: any, message = 'Error al ingresar', code = 1007) {
+      super(errorContent, message, code)
+    }}
