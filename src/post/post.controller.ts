@@ -30,7 +30,7 @@ import { PrismaError } from '../Services/prisma.errors'
 import { prismaClient } from '../Services/database.service'
 import { UserNotAuthenticated } from '../auth/auth.errors';
 import {facebookService} from '../auth/auth.controller';
-import { AddAudioError, FileMissingError, MissingParamError, PostError } from './post.error';
+import { AddAudioError, FileMissingError, MissingParamError, PostError, VideoUploadError } from './post.error';
 
 export class PostController {
   constructor (
@@ -525,70 +525,41 @@ async getPostsIds  (
       const { username } = req.user as any
       console.log('subiendo', file, title, description, tags, url, username, req.body)
       if (url !== undefined) {
-        const createResponse =
-          await this.service.prisma.video.create(
-            {
-              data:
-              {
-                url,
-                youtubeId: url.split('watch?v=')[1],
-                author:
-                {
-                  connect:
-                  { username }
-                }
-              }
-            })
+         const createResponse =await this.service.addVideoToDB(url,username)
         console.log(createResponse, 'datos ')
-        if (createResponse !== undefined && createResponse !== null) {
-          res.status(200).send(createResponse)
-          return
-        } else {
-          res.status(500).send({
-            error: new Error('Error al escribir la base de datos'),
-            code: 4001
-          })
-        }
-        return
+        if (createResponse instanceof PrismaError) return res.status(500).send(createResponse)
+        return res.status(200).send(createResponse)  
       }
-
       if (file === undefined) {
         res.status(404).send({
-          error: new Error('Error al escribir la base de datos'),
-          code: 4002
+          error: new MissingParamError(undefined,"Debes enviar una URL o un archivo")
         })
         return
       }
+      // ARREGLAR ACA
       if (title !== undefined && (description !== undefined && description !== null && typeof description === 'string')) {
         console.log('Subir el Archivo opcion')
-        const response: unknown | string | GoogleError =
-        await this.googleService.uploadVideo(
-          file.path,
-          title,
-          description,
-          process.env.YOUTUBE_CHANNEL,
-          tags)
+        const response=await this.service.subirVideo(file,title,description,tags)
         console.log(response, 'termino upload')
         if (response instanceof GoogleError) {
           res.status(500).send(response)
           return
         }
         if (typeof response === 'string') {
-          const dbResponse = await this.service.prisma.video.create({ data: { youtubeId: response, author: { connect: { username } } } })
-          if (dbResponse !== undefined && dbResponse !== null) {
-            res.status(200).send(dbResponse)
+          const dbResponse =await this.service.addVideoToDB(response,username)
+          //await this.service.prisma.video.create({ data: { youtubeId: response, author: { connect: { username } } } })
+          if (dbResponse instanceof PrismaError) {
+            res.status(500).send(dbResponse)
             return
           } else {
-            res.status(500).send({
-              error: new Error('Error al escribir la base de datos'),
-              code: 4001
-            })
+            res.status(200).send(dbResponse)
             return
           }
         }
-      }
+      } else return res.status(404).send(new MissingParamError(undefined,"Debes enviar una URL o un archivo"))
     } catch (error) {
       logger.error({ function: 'postController.videoUpload', error })
+      return res.status(500).send(new VideoUploadError(error))
     }
   }
   async eraseVideo  (req: Request<any, any, any, VideoEraseType['query']>, res: Response)  {

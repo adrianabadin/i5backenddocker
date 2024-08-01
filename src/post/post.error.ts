@@ -50,3 +50,10 @@ export class MissingParamError extends PostError{
       
   }
 }
+export class VideoUploadError extends PostError{
+  constructor(errorContent?:any,message:string='Error al subir Video a YouTube',code:string='PE-0004'  ){
+      super(errorContent,message,code)
+      this.name='Video Upload Error'
+      
+  }
+}

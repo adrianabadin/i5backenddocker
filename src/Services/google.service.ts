@@ -2,7 +2,7 @@ import { google, type drive_v3 } from 'googleapis'
 import { prismaClient } from './database.service'
 import { logger } from './logger.service'
 import fs from 'fs'
-import { FileCreateError, FolderCreateError, GoogleError, NeverAuthError, PermissionsCreateError, QuotaExceededError, TokenError, UnknownGoogleError, VideoCreateError } from '../Entities'
+import { FileCreateError, FolderCreateError, GoogleError, NeverAuthError, PermissionsCreateError, QuotaExceededError, TokenError, UnknownGoogleError, ValidateGoogleError, VideoCreateError } from '../Entities'
 export const oauthClient = new google.auth.OAuth2(
   process.env.CLIENTID_BUCKET,
   process.env.CLIENTSECRET_BUCKET,
@@ -155,8 +155,7 @@ export class GoogleService {
     }
   }
 
-  async uploadVideo (path: string, title: string, description: string, channelId?: string, tags?: string[]):
-  Promise<string | TokenError | NeverAuthError | UnknownGoogleError | VideoCreateError | QuotaExceededError> {
+  async uploadVideo (path: string, title: string, description: string, channelId?: string, tags?: string[]) {
     try {
       const initiateResponse = await this.initiateAuth()
       if (initiateResponse instanceof GoogleError) throw initiateResponse
@@ -172,42 +171,20 @@ export class GoogleService {
           body: fs.createReadStream(path)
 
         }
-
       }
       )
       if (video.data === null) throw new VideoCreateError()
       if (video.data.id === undefined || video.data.id === null) throw new VideoCreateError()
-      return video.data.id
+      return video.data.id as string
     } catch (error: unknown) {
       if (typeof error === 'object' && error !== null && 'code' in error && error.code === 403) {
-        if ('errors' in error) {
-          if (Array.isArray(error.errors)) {
-            const quotas = error.errors.map((errorItem: unknown): number => {
-              if (typeof errorItem === 'object' && errorItem !== null && 'reason' in errorItem) {
-                if (errorItem.reason === 'quotaExceeded') {
-                  return 1
-                }
-              }
-              return 0
-            }).reduce((prev, cur) => prev + cur)
-            if (quotas > 0) {
-              logger.error({ function: 'GoogleService.uploadVideo', error: new QuotaExceededError(error) })
-              return new QuotaExceededError(error)
-            }
-          }
-        }
-      }
-
-      if (error instanceof TokenError || error instanceof NeverAuthError || error instanceof VideoCreateError || error instanceof QuotaExceededError) {
-        logger.error({ function: 'GoogleService.uploadVideo', error })
-        return error
-      } else {
-        logger.error({ function: 'GoogleService.uploadVideo', error: new UnknownGoogleError(error) })
-        return new UnknownGoogleError(error)
-      }
-    }
+        const err= ValidateGoogleError(error as any)
+        logger.error({function:'GoogleService.uploadVideo',error:err })
+        return err
+      
+    }else return new UnknownGoogleError(error)
   }
-
+  }
   async videoRm (id: string): Promise<TokenError | NeverAuthError | UnknownGoogleError | true> {
     try {
       const initiateResponse = await this.initiateAuth()

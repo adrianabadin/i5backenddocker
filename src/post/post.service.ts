@@ -4,7 +4,7 @@
 import { DatabaseHandler, prismaClient } from '../Services/database.service'
 import { Prisma } from '@prisma/client'
 import { logger } from '../Services/logger.service'
-import { type MyCursor, type GenericResponseObject, ResponseObject } from '../Entities'
+import { type MyCursor, type GenericResponseObject, ResponseObject, GoogleError } from '../Entities'
 import { type CreatePostType, type ImagesSchema } from './post.schema'
 import { facebookService  } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
@@ -32,7 +32,62 @@ export class PostService  {
     this.getPost=this.getPost.bind(this)
     this.getPosts=this.getPosts.bind(this)
     this.createPost=this.createPost.bind(this)
+    this.addVideoToDB=this.addVideoToDB.bind(this)
+    this.subirVideo=this.subirVideo.bind(this)
   }
+  async subirVideo(file:Express.Multer.File,title:string,description:string,tags?:string[]){
+   try{
+    console.log('Subir el Archivo opcion')
+    const response: unknown | string | GoogleError =
+    await this.googleService.uploadVideo(
+      file.path,
+      title,
+      description,
+      process.env.YOUTUBE_CHANNEL,
+      tags)
+    console.log(response, 'termino upload')
+    return response
+  }catch(err){
+
+  }
+    // if (typeof response === 'string') {
+    //   const dbResponse = await this.service.prisma.video.create({ data: { youtubeId: response, author: { connect: { username } } } })
+    //   if (dbResponse !== undefined && dbResponse !== null) {
+    //     res.status(200).send(dbResponse)
+    //     return
+    //   } else {
+    //     res.status(500).send({
+    //       error: new Error('Error al escribir la base de datos'),
+    //       code: 4001
+    //     })
+    //     return
+    //   }
+    // }
+
+  }
+  async addVideoToDB (url:string,username:string){
+    try{
+const response =  await this.prisma.video.create(
+  {
+    data:
+    {
+      url,
+      youtubeId: url.split('watch?v=')[1],
+      author:
+      {
+        connect:
+        { username }
+      }
+    }
+  })
+return response
+    }catch(err){
+      const error= ValidatePrismaError(err as any)
+      logger.error({function:'PostService.addVideoToDB',error})
+      return error
+    }
+  }
+
   async eraseAudioFromDB(id:string){
     try{
       const response = await this.prisma.audio.delete({where:{id}})

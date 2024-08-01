@@ -102,6 +102,30 @@ export class QuotaExceededError extends GoogleError {
     this.name = 'Quota Exceeded Error'
   }
 }
+export function ValidateGoogleError(error:Error){
+  if ('errors' in error) {
+    if (Array.isArray(error.errors)) {
+      const quotas = error.errors.map((errorItem: unknown): number => {
+        if (typeof errorItem === 'object' && errorItem !== null && 'reason' in errorItem) {
+          if (errorItem.reason === 'quotaExceeded') {
+            return 1
+          }
+        }
+        return 0
+      }).reduce((prev, cur) => prev + cur)
+      if (quotas > 0) {      
+        return new QuotaExceededError(error)
+      }
+    }
+  }
+  if (error instanceof GoogleError) {
+    return error
+  } else {
+    return new UnknownGoogleError(error)
+  }
+
+}
+
 /**
  * videos.delete
 Tipo de error	Detalle del error	Descripción
