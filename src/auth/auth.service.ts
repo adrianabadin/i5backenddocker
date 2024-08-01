@@ -4,7 +4,7 @@ import { type Users } from '@prisma/client'
 import { type Request } from 'express'
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
-import {JWTLoginError, TokenExpiredError} from './auth.errors'
+import {JWTLoginError, TokenExpiredError, TokenUndefinedError} from './auth.errors'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import { type IResponseObject, type DoneType } from '../Entities'
@@ -122,7 +122,8 @@ export class AuthService  {
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     console.log("llega al verify")
     try {
-      if (jwtPayload === "Token Expired") return done(new TokenExpiredError(),false)
+      if (jwtPayload === "Token Expired") return done(new TokenExpiredError(),false,{message:"Invalid Token"})
+        if (jwtPayload === "Token Undefined") return done(new TokenUndefinedError(),false,{message:"Undefined Token"})  
       const id = jwtPayload.sub as unknown as string
       console.log(id,"ingreso")
       const userResponse = await this.prisma.users.findUnique({ where: { id } })

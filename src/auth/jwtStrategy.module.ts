@@ -25,7 +25,7 @@ export const cookieExtractor = (req: Request): string => {
       return token}
       else return "Token Expired"
    // else throw new Error('simetricKey is undefined')
-  } else throw new Error('Token is undefined')
+  } else return "Token Undefined"
 }
 passport.use(new Strategy({
   jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),

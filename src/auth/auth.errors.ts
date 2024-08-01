@@ -29,6 +29,11 @@ export class TokenExpiredError extends AuthError {
     super(errorContent, message, code)
   }
 }
+export class TokenUndefinedError extends AuthError {
+  constructor (errorContent?: any, message:string = 'El Usuario no ha Ingresado', code:number = 1005) {
+    super(errorContent, message, code)
+  }
+}
 export class JWTLoginError extends AuthError {
   constructor (errorContent?: any, message:string = 'Error al persistir session vuelva a iniciar session', code:number = 1005) {
     super(errorContent, message, code)
