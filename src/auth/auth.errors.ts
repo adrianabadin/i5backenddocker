@@ -24,3 +24,13 @@ export class UserNotAuthenticated extends AuthError {
     super(errorContent, message, code)
   }
 }
+export class TokenExpiredError extends AuthError {
+  constructor (errorContent?: any, message:string = 'La Session expiro debes volver a iniciar session', code:number = 1004) {
+    super(errorContent, message, code)
+  }
+}
+export class JWTLoginError extends AuthError {
+  constructor (errorContent?: any, message:string = 'Error al persistir session vuelva a iniciar session', code:number = 1005) {
+    super(errorContent, message, code)
+  }
+}

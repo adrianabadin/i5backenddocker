@@ -3,6 +3,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt'
 import passport from 'passport'
 import { AuthService } from './auth.service'
 import { decrypt } from '../Services/keypair.service'
+import jwt from  "jsonwebtoken"
 import { type Request } from 'express'
 import fs from 'fs'
 import dotenv from 'dotenv'
@@ -16,11 +17,13 @@ export const cookieExtractor = (req: Request): string => {
   let { jwt: token } = req.cookies
   //if ('jwt' in req.body && req.body.jwt !== null && token === undefined) { token = req.body.jwt }
   console.log(token,"token")
-  if (token !== undefined) {
+  if (token !== undefined ) {
     //console.log("key",decrypt(token,simetricKey))
     //if (simetricKey !== undefined) {
-      console.log("llega al return")
-      return token
+    if (jwt.verify(token,publicKey)){  
+    console.log("llega al return")
+      return token}
+      else return "Token Expired"
    // else throw new Error('simetricKey is undefined')
   } else throw new Error('Token is undefined')
 }

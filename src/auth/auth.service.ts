@@ -4,6 +4,7 @@ import { type Users } from '@prisma/client'
 import { type Request } from 'express'
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
+import {JWTLoginError, TokenExpiredError} from './auth.errors'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import { type IResponseObject, type DoneType } from '../Entities'
@@ -121,6 +122,7 @@ export class AuthService  {
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
     console.log("llega al verify")
     try {
+      if (jwtPayload === "Token Expired") return done(new TokenExpiredError(),false)
       const id = jwtPayload.sub as unknown as string
       console.log(id,"ingreso")
       const userResponse = await this.prisma.users.findUnique({ where: { id } })
@@ -141,12 +143,12 @@ export class AuthService  {
           done(null, user, { message: 'Successfully Logged In' })
         } else {
           logger.debug({ function: 'jwtLoginVerify', message: 'ID doesent match any registred users' })
-          done(null, false, { message: 'ID doesnt match any registred users' })
+          done(new JWTLoginError(), false, { message: 'ID doesnt match any registred users' })
         }
       }
     } catch (error) {
       logger.error({ function: 'AuthService.jwtLoginVerify', error })
-      done(error, false, { message: 'Database Error' })
+      done(new JWTLoginError(), false, { message: 'Database Error' })
     }
   }
    async googleAuthVerify  (req: Request, accessToken: string, refreshToken: string, profile: any, done: DoneType) {
