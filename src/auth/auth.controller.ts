@@ -77,7 +77,7 @@ export class AuthController {
         console.log(refreshToken)
         res.status(200).json({ ...req.user, refreshToken })
       } catch (error) { logger.error({ function: 'AuthController.sendAuthData', error }) }
-    } else res.status(403).send('unauthorized')
+    } else res.status(401).send({data:{text:req.flash()["message"] as any +"texto"}})
   }
    issueJWT  (req: Request, res: Response, next: NextFunction) {
     console.log('issuing')
