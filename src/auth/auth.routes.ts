@@ -21,7 +21,7 @@ if (err instanceof PrismaError) return res.status(500).send(err)
 if (err instanceof AuthError) return res.status(401).send(err)
 if (user !== false ) next()
 return res.status(500).send({ok:false,text:'unAuthorized'})
-  })
+  })()
 }, authController.localLogin)
 authRoutes.get('/setcookie', (req: Request, res: Response) => {
   res.cookie('adrian', 'groso')
