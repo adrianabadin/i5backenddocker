@@ -91,6 +91,7 @@ export class AuthController {
       const token = this.service.tokenIssuance(user.id as string)
       res.clearCookie("jwt")
       res.cookie('jwt',token)
+      console.log("Autenticado")
       return next()
     })(req,res,next)
   }
