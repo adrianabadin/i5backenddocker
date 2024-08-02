@@ -19,7 +19,7 @@ authRoutes.post('/login',(req:Request,res:Response,next:NextFunction)=>{
 console.log({err,info,user,status})
 if (err instanceof PrismaError) return res.status(500).send(err)
 if (err instanceof AuthError) return res.status(401).send(err)
-if (user !== false )  next()
+if (user !== false ) return next()
 return res.status(500).send({ok:false,text:'unAuthorized'})
   })(req,res,next)
 }, authController.localLogin)
