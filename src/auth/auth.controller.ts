@@ -9,7 +9,9 @@ import { FacebookService } from '../Services/facebook.service'
 import { GoogleService, oauthClient } from '../Services/google.service'
 import { logger } from '../Services/logger.service'
 import { prismaClient } from '../Services/database.service'
+import passport from 'passport'
 import {type Prisma} from "@prisma/client"
+import { AuthError } from './auth.errors'
 dotenv.config()
 const simetricKey = (process.env.SIMETRICKEY !== undefined) ? process.env.SIMETRICKEY : ''
 export let facebookService:FacebookService
@@ -29,6 +31,7 @@ export class AuthController {
     this.sendAuthData=this.sendAuthData.bind(this)
     this.jwtRenewalToken=this.jwtRenewalToken.bind(this)
     this.Guard=this.Guard.bind(this)
+    this.isAuth=this.isAuth.bind(this)
   }
    Guard  (req: Request, res: Response, next: NextFunction) {
     let id
@@ -78,6 +81,18 @@ export class AuthController {
         res.status(200).json({ ...req.user, refreshToken })
       } catch (error) { logger.error({ function: 'AuthController.sendAuthData', error }) }
     } else res.status(401).send({data:{text:"Error al ingresar " }})
+  }
+  isAuth(req: Request, res: Response, next: NextFunction){
+    passport.authenticate('jwt',(err:AuthError|null,user:Prisma.UsersCreateInput |false,info:string)=>{
+      if (err instanceof AuthError) return  res.status(401).send(err)
+      if (err !== null) return res.status(500).send({ok:false,text:"Fallo al Autenticar Token"})
+      if (!user ) return res.status(401).send({ok:false,text:"Usuario NO encontrado"})
+      req.logIn(user,{session:false} as any)  
+      const token = this.service.tokenIssuance(user.id as string)
+      res.clearCookie("jwt")
+      res.cookie('jwt',token)
+      return next()
+    })(req,res,next)
   }
    issueJWT  (req: Request, res: Response, next: NextFunction) {
     console.log('issuing')

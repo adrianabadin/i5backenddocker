@@ -32,7 +32,7 @@ export const postRouter = Router()
 /**
  * AUDIO ROUTES
  */
-postRouter.post("/audiolocal",passport.authenticate('jwt', { session: false }),
+postRouter.post("/audiolocal",/*passport.authenticate('jwt', { session: false })*/authController.isAuth,
 authController.jwtRenewalToken,upload.array('audio'),postController.addAudio)
 postRouter.post('/audio',
   passport.authenticate('jwt', { session: false }),
