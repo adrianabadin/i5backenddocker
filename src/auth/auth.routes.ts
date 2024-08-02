@@ -15,11 +15,15 @@ const authController = new AuthController()
 authRoutes.post('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.get('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.post('/login',(req:Request,res:Response,next:NextFunction)=>{
-  passport.authenticate('login',(err:AuthError|PrismaError|null,user:object|false,info:string,status:any)=>{
+  passport.authenticate('login',
+    (err:AuthError|PrismaError|null,user:object|false,info:string,status:any)=>{
 console.log({err,info,user,status})
 if (err instanceof PrismaError) return res.status(500).send(err)
 if (err instanceof AuthError) return res.status(401).send(err)
-if (user !== false ) return next()
+if (user !== false ) {
+  console.log("Usuario logueado",req.isAuthenticated() )
+
+  return next()}
 return res.status(500).send({ok:false,text:'unAuthorized'})
   })(req,res,next)
 }, authController.localLogin)
