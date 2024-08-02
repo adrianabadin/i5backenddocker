@@ -15,7 +15,7 @@ const authController = new AuthController()
 authRoutes.post('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.get('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.post('/login',(req:Request,res:Response,next:NextFunction)=>{
-  passport.authenticate('login',{session:false},(err:AuthError|PrismaError|null,info:string,user:object|false,status:any)=>{
+  passport.authenticate('login',(err:AuthError|PrismaError|null,info:string,user:object|false,status:any)=>{
 console.log({err,info,user,status})
 if (err instanceof PrismaError) return res.status(500).send(err)
 if (err instanceof AuthError) return res.status(401).send(err)
