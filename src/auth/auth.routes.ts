@@ -21,6 +21,8 @@ console.log({err,info,user,status})
 if (err instanceof PrismaError) return res.status(500).send(err)
 if (err instanceof AuthError) return res.status(401).send(err)
 if (user !== false ) {
+  req.logIn(user,(err)=> {
+    if (err) return res.status(500).send(err)})
   console.log("Usuario logueado",req.isAuthenticated() )
 
   return next()}
