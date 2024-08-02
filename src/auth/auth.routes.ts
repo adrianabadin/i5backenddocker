@@ -6,13 +6,23 @@ import passport from 'passport'
 import dotenv from 'dotenv'
 import { userLogged } from '../app'
 import { url } from '../Services/google.service'
+import { AuthError } from './auth.errors'
+import { PrismaError } from '../Services/prisma.errors'
 
 dotenv.config()
 export const authRoutes = Router()
 const authController = new AuthController()
 authRoutes.post('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
 authRoutes.get('/token', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, authController.sendAuthData)
-authRoutes.post('/login', passport.authenticate('login',{session:false,failureFlash:true}), authController.localLogin)
+authRoutes.post('/login',(req:Request,res:Response,next:NextFunction)=>{
+  passport.authenticate('login',{session:false},(err:AuthError|PrismaError|null,info:string,user:object|false,status:any)=>{
+console.log({err,info,user,status})
+if (err instanceof PrismaError) return res.status(500).send(err)
+if (err instanceof AuthError) return res.status(401).send(err)
+if (user !== false ) next()
+if (!user && err === null) return res.status(500).send({ok:false,text:'unAuthorized'})
+  })
+}, authController.localLogin)
 authRoutes.get('/setcookie', (req: Request, res: Response) => {
   res.cookie('adrian', 'groso')
   res.send({ ok: true })

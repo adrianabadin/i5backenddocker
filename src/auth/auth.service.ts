@@ -94,8 +94,8 @@ export class AuthService  {
    async localLoginVerify  (req: Request, username: string, password: string, done: DoneType) {
     try {
       const user = await this.usersService.findByUserName(username)// await this.prisma.users.findUniqueOrThrow({ where: { username }, select: { isVerified: true, lastName: true, id: true, username: true, name: true, rol: true, hash: true } }) as any
-      if (user instanceof PrismaError)  return done(null, false,{message:'El Usuario no existe'})
-      if (user === undefined || user ===null) return done(null, false,{message:'El Usuario no existe'})
+      if (user instanceof PrismaError)  return done(new UserDoesntExistError(), false,{message:'El Usuario no existe'})
+      if (user === undefined || user ===null) return done(new UserDoesntExistError(), false,{message:'El Usuario no existe'})
       if (user !== undefined && 'username' in user && user.username !== null) {
         logger.debug({
           function: 'AuthService.localLoginVerify', user: { ...user, hash: null }
@@ -108,8 +108,8 @@ export class AuthService  {
             console.log('some', user)
             delete user.hash
             return done(null, user, { message: 'Successfully Logged In' })
-          } else return done(null, false, { message: 'El usuario no esta registrado' })
-        } else return done(null, false, { message: 'Usuario y contraseña no coinciden' })
+          } else return done(new UserDoesntExistError(), false, { message: 'El usuario no esta registrado' })
+        } else return done(new PasswordMissMatchError(), false, { message: 'Usuario y contraseña no coinciden' })
       }
     } catch (error) {
       logger.error({ function: 'AuthService.localLoginVerify', error })
