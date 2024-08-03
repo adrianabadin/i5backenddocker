@@ -240,7 +240,7 @@ return response
         const videosToAdd =videoFromDb?.map(video=>{
           if (!arrayIds.includes(video.youtubeId)) return video 
         }).filter(videos=>videos !== undefined) as {youtubeId:string,id:string}[]
-        console.log({arrayIds,videosToAdd,videosFromDbId,postId:postObject.id})
+        console.log({arrayIds,videosToAdd,videosFromDbId,postId:postObject.id,postObject})
         const deleteAudioResponse = await this.prisma.audio.deleteMany({ where: { postsId: postObject.id as string } })
         //const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
         const audioMap = (audioFromDB !== undefined) ? { create: audioFromDB.map(item => ({ driveId: item.driveId })) } : undefined
