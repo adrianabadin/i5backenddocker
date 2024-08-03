@@ -244,7 +244,7 @@ return response
         const deleteAudioResponse = await this.prisma.audio.deleteMany({ where: { postsId: postObject.id as string } })
         //const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
         const audioMap = (audioFromDB !== undefined) ? { create: audioFromDB.map(item => ({ driveId: item.driveId })) } : undefined
-        const videoMap = (videosToAdd !== undefined) ? { connect: videosToAdd.map(item => ({ youtubeId: item.youtubeId })) } : undefined
+        const videoMap = (videosToAdd !== undefined) ? { connect: videosToAdd.map(item => ({ id:item.id })) } : undefined
         console.log({videoMap,id:videoMap?.connect})
         const imageMap = photoObjectNoUndef.map(photo => {
           return { ...photo }
