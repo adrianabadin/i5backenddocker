@@ -37,8 +37,12 @@ authRoutes.get('/getcookies', (req: Request, res: Response) => {
 authRoutes.post('/signup', upload.single('avatar'),(req:Request,res:Response,next:NextFunction)=>{
   passport.authenticate('register', (err:null|object,user:false|object ,info:any)=>{
     console.log({err,user,info})
-    if (err instanceof AuthError) return res.status(401).send(err)
-    if (err !== undefined) return res.status(500).send(err)
+    if (err instanceof AuthError) {
+      console.log("va bien")
+      return res.status(401).send(err)}
+    if (err !== undefined) {
+      console.log("va regular")
+      return res.status(500).send(err)}
     if (!user) return res.status(500).send(new UserCreateError())
     req.logIn(user,{session:false}as any)
   next()
