@@ -235,12 +235,12 @@ return response
         const author: string = postObject.author as string
         /* aca debo hacer distintas ramas en el caso de que se tenga imagenes para borrar, tenga imagenes para agregar  */
         if (author === undefined) throw new Error('No author specified')
-        const videosFromDbId =(await this.prisma.video.findMany({where:{postsId:postObject.id as string},select:{youtubeId:true}}))
+        const videosFromDbId =(await this.prisma.video.findMany({where:{postsId:idParam as string},select:{youtubeId:true}}))
       const arrayIds= videosFromDbId.map(item=>item.youtubeId !== null ?item.youtubeId : "") 
         const videosToAdd =videoFromDb?.map(video=>{
           if (!arrayIds.includes(video.youtubeId)) return video 
         }).filter(videos=>videos !== undefined) as {youtubeId:string,id:string}[]
-        console.log({arrayIds,videosToAdd,videosFromDbId,postId:postObject.id,postObject})
+        console.log({arrayIds,videosToAdd,videosFromDbId,postId:idParam,postObject})
         const deleteAudioResponse = await this.prisma.audio.deleteMany({ where: { postsId: postObject.id as string } })
         //const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
         const audioMap = (audioFromDB !== undefined) ? { create: audioFromDB.map(item => ({ driveId: item.driveId })) } : undefined
