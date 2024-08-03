@@ -84,11 +84,11 @@ export class AuthController {
   }
   isAuth(req: Request, res: Response, next: NextFunction){
     passport.authenticate('jwt',(err:AuthError|null,user:Prisma.UsersCreateInput |false,info:any)=>{
-      console.log({err,user,info})
+      console.log({err,user,info},info)
       if (err instanceof AuthError) return  res.status(401).send(err)
       if (err !== null) return res.status(500).send({ok:false,text:"Fallo al Autenticar Token"})
       if (err === null && info instanceof AuthError) {console.log("por aca papa "); res.status(401).send(info)}
-        if (!user ) return res.status(401).send({ok:false,text:"Usuario NO encontrado"})
+      if (!user ) return res.status(401).send({ok:false,text:"Usuario NO encontrado"})
       req.logIn(user,{session:false} as any)  
       const token = this.service.tokenIssuance(user.id as string)
       res.clearCookie("jwt")
