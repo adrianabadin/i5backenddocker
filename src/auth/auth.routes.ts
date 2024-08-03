@@ -6,7 +6,7 @@ import passport from 'passport'
 import dotenv from 'dotenv'
 import { userLogged } from '../app'
 import { url } from '../Services/google.service'
-import { AuthError } from './auth.errors'
+import { AuthError, UserCreateError } from './auth.errors'
 import { PrismaError } from '../Services/prisma.errors'
 import { logger } from '../Services/logger.service'
 
@@ -34,7 +34,14 @@ authRoutes.get('/setcookie', (req: Request, res: Response) => {
 authRoutes.get('/getcookies', (req: Request, res: Response) => {
   res.send({ ok: true, cookie: req.cookies })
 })
-authRoutes.post('/signup', upload.single('avatar'), passport.authenticate('register', { session: false }), authController.localLogin)
+authRoutes.post('/signup', upload.single('avatar'),(req:Request,res:Response,next:NextFunction)=>{
+  passport.authenticate('register', (err:null|object,user:false|object ,info:any)=>{
+    if (err !== null) return res.status(500).send(err)
+    if (!user) return res.status(500).send(new UserCreateError())
+    req.logIn(user,{session:false}as any)
+  next()
+  })(req,res,next)
+} , authController.localLogin)
 authRoutes.get('/goauth', passport.authenticate('google', {session:false,
   scope: ['profile', 'email', 'openid'], prompt: 'consent'
 }), authController.gOAuthLogin)
