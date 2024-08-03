@@ -39,10 +39,10 @@ authRoutes.post('/signup', upload.single('avatar'),(req:Request,res:Response,nex
     console.log({err,user,info})
     if (err instanceof AuthError) {
       console.log("va bien")
-      return res.status(401).send(err)}
+      return res.status(401).send({...err,...info})}
     if (err !== undefined) {
       console.log("va regular")
-      return res.status(500).send(err)}
+      return res.status(500).send({...err,...info})}
     if (!user) return res.status(500).send(new UserCreateError())
     req.logIn(user,{session:false}as any)
   next()
