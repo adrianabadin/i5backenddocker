@@ -4,7 +4,7 @@ import passport from 'passport'
 import { AuthService } from './auth.service'
 import { decrypt } from '../Services/keypair.service'
 import jwt from  "jsonwebtoken"
-import { type Request } from 'express'
+import { Response, type Request } from 'express'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import { TokenExpiredError, TokenUndefinedError } from './auth.errors'
@@ -14,7 +14,7 @@ const publicKey = fs.readFileSync(`${process.env.KEYS_PATH}/publicKey.pem`, 'utf
 const simetricKey = '+vdKrc3rEqncv+pgGy9WmhZXoQfWsPiAuc1UA5yfujE='// process.env.SIMETRICKEY
 
 const authService = new AuthService()
-export const cookieExtractor = (req: Request): string => {
+export const cookieExtractor = (req: Request,res:Response) => {
   let { jwt: token } = req.cookies
   //if ('jwt' in req.body && req.body.jwt !== null && token === undefined) { token = req.body.jwt }
   console.log(token,"token")
@@ -24,12 +24,13 @@ export const cookieExtractor = (req: Request): string => {
     if (jwt.verify(token,publicKey)){  
     console.log("llega al return")
       return token}
-      else throw new TokenExpiredError()
+      else res.status(401).send(new TokenExpiredError())
    // else throw new Error('simetricKey is undefined')
-  } else throw new TokenUndefinedError()
+  } else res.status(401).send(new TokenUndefinedError())
 }
+//ExtractJwt.fromExtractors([cookieExtractor])
 passport.use(new Strategy({
-  jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: publicKey,
   algorithms: ['RS256'],
   passReqToCallback: true
