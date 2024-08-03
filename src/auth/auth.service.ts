@@ -121,7 +121,7 @@ export class AuthService  {
     if (simetricKey !== undefined) { return jwToken/*this.crypt.encrypt(jwToken, simetricKey)*/ } else throw new Error('simetricKey is undefined')
   }
    async jwtLoginVerify  (req: Request, jwtPayload: string, done: DoneType) {
-    console.log("llega al verify")
+    console.log("llega al verify",jwtPayload)
     try {
       if (jwtPayload === "Token Undefined") return done(new TokenUndefinedError(),false,{message:"Undefined Token"})  
       if (jwtPayload === "Token Expired") return done(new TokenExpiredError(),false,{message:"Invalid Token"})

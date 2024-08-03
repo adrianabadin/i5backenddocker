@@ -14,19 +14,12 @@ const publicKey = fs.readFileSync(`${process.env.KEYS_PATH}/publicKey.pem`, 'utf
 const simetricKey = '+vdKrc3rEqncv+pgGy9WmhZXoQfWsPiAuc1UA5yfujE='// process.env.SIMETRICKEY
 
 const authService = new AuthService()
-export const cookieExtractor = (req: Request,res:Response) => {
+export const cookieExtractor = (req: Request) => {
   let { jwt: token } = req.cookies
-  //if ('jwt' in req.body && req.body.jwt !== null && token === undefined) { token = req.body.jwt }
   console.log(token,"token")
   if (token !== undefined ) {
-    //console.log("key",decrypt(token,simetricKey))
-    //if (simetricKey !== undefined) {
-    if (jwt.verify(token,publicKey)){  
-    console.log("llega al return")
-      return token}
-      else res.status(401).send(new TokenExpiredError())
-   // else throw new Error('simetricKey is undefined')
-  } else res.status(401).send(new TokenUndefinedError())
+    return token
+  } else return null
 }
 //ExtractJwt.fromExtractors([cookieExtractor])
 passport.use(new Strategy({
