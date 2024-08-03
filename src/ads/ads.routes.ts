@@ -29,13 +29,13 @@ const storage = multer.diskStorage({
 export const upload = multer({ storage })
 export const adsRouter = Router()
 
-adsRouter.post('/create', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, upload.single('image'),
+adsRouter.post('/create', authController.isAuth, upload.single('image'),
   schemaValidator(createAdSchema),
   adsController.createAd)
 adsRouter.get('/getAll', adsController.getAds)
-adsRouter.put('/setActive/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, adsController.setActive)
-adsRouter.put('/setInactive/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, adsController.setInactive)
-adsRouter.delete('/delete/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, adsController.deleteAd)
+adsRouter.put('/setActive/:id', authController.isAuth, adsController.setActive)
+adsRouter.put('/setInactive/:id', authController.isAuth, adsController.setInactive)
+adsRouter.delete('/delete/:id', authController.isAuth, adsController.deleteAd)
 adsRouter.get('/get/:id', adsController.getAd)
-adsRouter.put('/update/:id', upload.single('image'), schemaValidator(createAdSchema), passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, adsController.updateAd)
+adsRouter.put('/update/:id', upload.single('image'), schemaValidator(createAdSchema), authController.isAuth, adsController.updateAd)
 export default adsRouter

@@ -33,29 +33,25 @@ export const postRouter = Router()
  * AUDIO ROUTES
  */
 postRouter.post("/audiolocal",authController.isAuth,upload.array('audio'),postController.addAudio)
-postRouter.post('/audio',
-  passport.authenticate('jwt', { session: false }),
-  authController.jwtRenewalToken, upload.array('audio'), postController.uploadAudio)
-postRouter.delete('/audioRemove',passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken, postController.eraseAudio)
+postRouter.post('/audio',authController.isAuth, upload.array('audio'), postController.uploadAudio)
+postRouter.delete('/audioRemove',authController.isAuth, postController.eraseAudio)
 postRouter.get(
   '/getPostById/:id',
   schemaValidator(getPostById),
   postController.getPostById
 )
-postRouter.delete('/audiolocal',passport.authenticate('jwt', { session: false }),
-authController.jwtRenewalToken,upload.array('audio'),postController.eraseLocalAudio)
+postRouter.delete('/audiolocal',authController.isAuth,upload.array('audio'),postController.eraseLocalAudio)
 /**
  * VIDEO ROUTES
  */
 postRouter.post(
   '/videoAdd',
-  passport.authenticate('jwt', { session: false }),
-  authController.jwtRenewalToken,
+  authController.isAuth,
   upload.single('video'),
 
   postController.videoUpload)
 postRouter.delete('/videoRm',
-passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
+  authController.isAuth,
   schemaValidator(videoEraseSchema),
   postController.eraseVideo)
 
@@ -64,7 +60,7 @@ passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
  */
 postRouter.post(
   '/create',
-  passport.authenticate('jwt', { session: false }),authController.jwtRenewalToken,
+  authController.isAuth,
   upload.array('images'),
   schemaValidator(createPostSchema),
   postController.createPost
@@ -77,11 +73,11 @@ postRouter.get(
 )
 postRouter.get('/get30days', postController.get30DaysPosts)
 postRouter.put(
-  '/updatePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken,
+  '/updatePost/:id', authController.isAuth,
   upload.array('images'),
   postController.updatePost
 )
 // postRouter.put('/hidePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, postController.hidePost)
-postRouter.delete('/deletePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, schemaValidator(getPostById), postController.deletePost)
-postRouter.put('/hidePost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, schemaValidator(getPostById), postController.hidePost)
-postRouter.put('/showPost/:id', passport.authenticate('jwt', { session: false }), authController.jwtRenewalToken, schemaValidator(getPostById), postController.showPost)
+postRouter.delete('/deletePost/:id', authController.isAuth, schemaValidator(getPostById), postController.deletePost)
+postRouter.put('/hidePost/:id', authController.isAuth, schemaValidator(getPostById), postController.hidePost)
+postRouter.put('/showPost/:id', authController.isAuth, schemaValidator(getPostById), postController.showPost)
