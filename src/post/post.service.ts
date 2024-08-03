@@ -238,14 +238,14 @@ return response
         const videosFromDbId =(await this.prisma.video.findMany({where:{postsId:idParam as string},select:{youtubeId:true}}))
       const arrayIds= videosFromDbId.map(item=>item.youtubeId !== null ?item.youtubeId : "") 
         const videosToAdd =videoFromDb?.map(video=>{
-          if (!arrayIds.includes(video.youtubeId)) return video 
+          if (!arrayIds.includes(video.youtubeId)) return JSON.parse(video as any)
         }).filter(videos=>videos !== undefined) as {youtubeId:string,id:string}[]
         console.log({arrayIds,videosToAdd,videosFromDbId,postId:idParam,postObject})
         const deleteAudioResponse = await this.prisma.audio.deleteMany({ where: { postsId: postObject.id as string } })
         //const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
         const audioMap = (audioFromDB !== undefined) ? { create: audioFromDB.map(item => ({ driveId: item.driveId })) } : undefined
         const videoMap = (videosToAdd !== undefined) ? { connect: videosToAdd.map(item => ({ id:item.id })) } : undefined
-        console.log({videoMap,id:videoMap?.connect})
+        console.log({videoMap,id:videoMap?.connect,videosToAdd})
         const imageMap = photoObjectNoUndef.map(photo => {
           return { ...photo }
         })
