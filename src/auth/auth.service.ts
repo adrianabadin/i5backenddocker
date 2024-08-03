@@ -77,7 +77,7 @@ export class AuthService  {
         if (newUser instanceof PrismaError) throw newUser
         if (newUser?.id !== undefined) {
           console.log('llego al final')
-          done(null, newUser)
+          return done(null, newUser)
         } else {
           throw new UserCreateError()
         }
@@ -86,7 +86,7 @@ export class AuthService  {
       logger.error({
         function: 'AuthService.localSignUpVerify', error
       })
-      if (error instanceof AuthError || error instanceof PrismaError) { done(error, false, { message: error.message }) } else done(error, false)
+      if (error instanceof AuthError || error instanceof PrismaError) { return done(error, false, { message: error.message }) } else return done(error, false)
     }
   }
 
