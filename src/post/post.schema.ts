@@ -63,6 +63,22 @@ const stringifiedImage = z.custom < string >((data) => {
     return true
   } catch (e) { return false }
 })
+
+export const videoUploadSchema = z.object({
+  body: z.object({
+    url: z.string().url({ message: 'Debe contener una url valida' }).optional(),
+    title: z.string().min(3, { message: 'El titulo debe tener al menos 3 letras' }).optional(),
+    description: z.string().min(3, { message: 'La descripcion debe tener al menos 3 letas' }).optional(),
+    tags: z.array(z.string()).optional(),
+    youtubeId: z.string().min(3, { message: 'El youtube ID debe tener al menos 3 letras' }).optional(),
+    id:z.string().uuid().optional()
+
+  }).refine((value) => {
+    if (value.url !== undefined) return true
+    else if (value.title !== undefined && value.description !== undefined) return true
+    return false
+  })
+})
 export const updatePostSchema = z.object({
   body: z.object({
     title: z.string({ invalid_type_error: 'El titulo debe ser una cadena' }).min(3, 'El titulo debe tener al menos 3 caracteres de longitud').optional(),
@@ -75,25 +91,14 @@ export const updatePostSchema = z.object({
     fbid: z.string({ invalid_type_error: 'Post FBID must be a string' }),
     dbImages: z.array(stringifiedImage).optional(),
     audio: z.string().optional(),
-    video: z.string().optional()
+    video: z.array(videoUploadSchema.shape['body']),
+    id: z.string().uuid().optional()
 
   })
 
 })
 
-export const videoUploadSchema = z.object({
-  body: z.object({
-    url: z.string().url({ message: 'Debe contener una url valida' }).optional(),
-    title: z.string().min(3, { message: 'El titulo debe tener al menos 3 letras' }).optional(),
-    description: z.string().min(3, { message: 'La descripcion debe tener al menos 3 letas' }).optional(),
-    tags: z.array(z.string()).optional()
 
-  }).refine((value) => {
-    if (value.url !== undefined) return true
-    else if (value.title !== undefined && value.description !== undefined) return true
-    return false
-  })
-})
 export const videoEraseSchema = z.object({
   query: z.object({
     youtubeId: z.string().min(3, { message: 'El youtube ID debe tener al menos 3 letras' })

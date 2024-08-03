@@ -5,7 +5,7 @@ import { DatabaseHandler, prismaClient } from '../Services/database.service'
 import { Prisma } from '@prisma/client'
 import { logger } from '../Services/logger.service'
 import { type MyCursor, type GenericResponseObject, ResponseObject, GoogleError } from '../Entities'
-import { type CreatePostType, type ImagesSchema } from './post.schema'
+import { UpdatePostType, type CreatePostType, type ImagesSchema } from './post.schema'
 import { facebookService  } from '../auth/auth.controller'
 import { GoogleService } from '../Services/google.service'
 import { ColumnPrismaError, NotFoundPrismaError, UniqueRestraintError, UnknownPrismaError } from '../Services/prisma.errors'
@@ -199,8 +199,9 @@ return response
       return data
     } catch (error) { logger.error({ function: 'PostService.updatePhoto', error }) }
   }
-  async updatePost  (postObject: Omit<Prisma.PostsUpdateInput, 'images' | 'audio' | 'importance'> & { audio?: string | undefined, importance: '1' | '2' | '3' | '4' | '5' }, idParam: string, photoObject: ImagesSchema[] | undefined): Promise<GenericResponseObject<Prisma.PostsUpdateInput>>  {
+  async updatePost  (postObject: UpdatePostType["body"]/*Omit<Prisma.PostsCreateInput, 'images' | 'audio' | 'importance'> & { audio?: string | undefined, importance: '1' | '2' | '3' | '4' | '5' }*/, idParam: string, photoObject: ImagesSchema[] | undefined): Promise<GenericResponseObject<Prisma.PostsUpdateInput>>  {
     let ids
+    
     let ids2: string[] | undefined
     let photoObjectNoUndefinedFalse: ImagesSchema[]
     let photoObjectNoUndef: ImagesSchema[]
@@ -234,11 +235,16 @@ return response
         const author: string = postObject.author as string
         /* aca debo hacer distintas ramas en el caso de que se tenga imagenes para borrar, tenga imagenes para agregar  */
         if (author === undefined) throw new Error('No author specified')
-   
+        const videosFromDbId =(await this.prisma.video.findMany({where:{postsId:postObject.id as string},select:{youtubeId:true}}))
+      const arrayIds= videosFromDbId.map(item=>item.youtubeId !== null ?item.youtubeId : "") 
+        const videosToAdd =videoFromDb?.map(video=>{
+          if (!arrayIds.includes(video.youtubeId)) return video 
+        }).filter(videos=>videos !== undefined) as {youtubeId:string,id:string}[]
+        
         const deleteAudioResponse = await this.prisma.audio.deleteMany({ where: { postsId: postObject.id as string } })
-        const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
+        //const deleteVideoResponse = await this.prisma.video.deleteMany({ where: { postsId: postObject.id as string } })
         const audioMap = (audioFromDB !== undefined) ? { create: audioFromDB.map(item => ({ driveId: item.driveId })) } : undefined
-        const videoMap = (videoFromDb !== undefined) ? { connect: videoFromDb.map(item => ({ youtubeId: item.youtubeId })) } : undefined
+        const videoMap = (videosToAdd !== undefined) ? { connect: videosToAdd.map(item => ({ youtubeId: item.youtubeId })) } : undefined
         const imageMap = photoObjectNoUndef.map(photo => {
           return { ...photo }
         })
@@ -263,7 +269,7 @@ return response
             },
             include: { audio: { select: { driveId: true, id: true } }, images: { select: { url: true, fbid: true, id: true } }, video: { select: { youtubeId: true } } }
           })
-        console.log(deleteAudioResponse, deleteVideoResponse, data)
+        console.log(deleteAudioResponse, data)
         // const data = transaction
 
         logger.debug({ function: 'PostService.updatePost', data })
