@@ -11,7 +11,7 @@ import { logger } from '../Services/logger.service'
 import { prismaClient } from '../Services/database.service'
 import passport from 'passport'
 import {type Prisma} from "@prisma/client"
-import { AuthError, TokenUndefinedError } from './auth.errors'
+import { AuthError, TokenExpiredError, TokenUndefinedError } from './auth.errors'
 dotenv.config()
 const simetricKey = (process.env.SIMETRICKEY !== undefined) ? process.env.SIMETRICKEY : ''
 export let facebookService:FacebookService
@@ -88,6 +88,7 @@ export class AuthController {
       if (err instanceof AuthError) return  res.status(401).send(err)
       if (err !== null) return res.status(500).send({ok:false,text:"Fallo al Autenticar Token"})
       if (err === null && info instanceof Error && info.message==='No auth token') {console.log("por aca papa "); return res.status(401).send(new TokenUndefinedError())}
+      if (err === null && info instanceof Error && info.message==='jwt expired') {console.log("expiro "); return res.status(401).send(new TokenExpiredError())}
       if (!user ) return res.status(401).send({ok:false,text:"Usuario NO encontrado"})
       req.logIn(user,{session:false} as any)  
       const token = this.service.tokenIssuance(user.id as string)
