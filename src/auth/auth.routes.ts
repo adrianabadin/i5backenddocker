@@ -62,5 +62,5 @@ authRoutes.get('/logout', (req: Request, res: Response) => {
   userLogged.id = ''
   userLogged.accessToken = ''
   res.clearCookie('jwt')
-  req.logOut((err)=>logger.error({function:'Logout',error:err}))
+  res.status(200).send({ok:true,text:'Se ha cerrado session'})
 })
