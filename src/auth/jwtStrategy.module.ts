@@ -7,6 +7,7 @@ import jwt from  "jsonwebtoken"
 import { type Request } from 'express'
 import fs from 'fs'
 import dotenv from 'dotenv'
+import { TokenExpiredError, TokenUndefinedError } from './auth.errors'
 // import * as jwt from 'jsonwebtoken'
 dotenv.config()
 const publicKey = fs.readFileSync(`${process.env.KEYS_PATH}/publicKey.pem`, 'utf-8')
@@ -23,9 +24,9 @@ export const cookieExtractor = (req: Request): string => {
     if (jwt.verify(token,publicKey)){  
     console.log("llega al return")
       return token}
-      else return "Token Expired"
+      else throw new TokenExpiredError()
    // else throw new Error('simetricKey is undefined')
-  } else return "Token Undefined"
+  } else throw new TokenUndefinedError()
 }
 passport.use(new Strategy({
   jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
