@@ -8,6 +8,7 @@ import { userLogged } from '../app'
 import { url } from '../Services/google.service'
 import { AuthError } from './auth.errors'
 import { PrismaError } from '../Services/prisma.errors'
+import { logger } from '../Services/logger.service'
 
 dotenv.config()
 export const authRoutes = Router()
@@ -61,4 +62,5 @@ authRoutes.get('/logout', (req: Request, res: Response) => {
   userLogged.id = ''
   userLogged.accessToken = ''
   res.clearCookie('jwt')
+  req.logOut((err)=>logger.error({function:'Logout',error:err}))
 })
