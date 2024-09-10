@@ -58,7 +58,7 @@ export class AuthController {
           console.log({facebookService},"data")
         }
         res.clearCookie('jwt')
-        res.cookie('jwt', token,{sameSite:"none",secure:true,httpOnly:true,path:"*"})
+        res.cookie('jwt', token,{sameSite:"lax",secure:true,httpOnly:true,path:"*"})
         next()
       }
     }
