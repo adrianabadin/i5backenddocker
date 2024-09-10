@@ -17,6 +17,7 @@ const authService = new AuthService()
 export const cookieExtractor = (req: Request) => {
   let { jwt: token } = req.cookies
   console.log(token,"token")
+  
   if (token !== undefined ) {
     return token
   } else return null
